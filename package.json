@@ -1,24 +1,24 @@
 {
   "name": "better-commit",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "lint": "ultracite check",
+    "format": "ultracite fix",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "prettier": "^3.7.4",
     "turbo": "^2.8.16",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "ultracite": "7.3.0"
   },
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "bun@1.3.10",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "packageManager": "bun@1.3.10"
 }
