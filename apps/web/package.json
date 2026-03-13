@@ -10,7 +10,7 @@
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@repo/ui": "*",
+    "@repo/design-system": "*",
     "next": "16.1.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
