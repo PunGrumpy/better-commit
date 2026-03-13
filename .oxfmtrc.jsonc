@@ -18,6 +18,7 @@
   "experimentalSortImports": {
     "ignoreCase": true,
     "newlinesBetween": true,
-    "order": "asc"
-  }
+    "order": "asc",
+  },
+  "ignorePatterns": ["!**/components/ui", "skills"],
 }
