@@ -1,0 +1,52 @@
+{
+  "name": "better-commit",
+  "version": "0.0.0",
+  "description": "AI-powered commit message tool similar to Commitizen",
+  "keywords": [
+    "ai",
+    "better-commit",
+    "commit",
+    "commitizen"
+  ],
+  "license": "MIT",
+  "author": "Noppakorn Kaewsalabnil <hello@pungrumpy.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pungrumpy/better-commit.git"
+  },
+  "bin": {
+    "bc": "dist/index.mjs",
+    "better-commit": "dist/index.mjs"
+  },
+  "files": [
+    "config",
+    "dist/index.js",
+    "dist/index.d.ts",
+    "README.md"
+  ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@clack/prompts": "^1.1.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "execa": "^9.5.2",
+    "openai": "^4.73.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/node": "catalog:",
+    "tsdown": "^0.21.2",
+    "typescript": "catalog:"
+  }
+}

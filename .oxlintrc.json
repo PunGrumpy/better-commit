@@ -5,5 +5,18 @@
     "./node_modules/ultracite/config/oxlint/react/.oxlintrc.json",
     "./node_modules/ultracite/config/oxlint/next/.oxlintrc.json"
   ],
-  "ignorePatterns": ["!**/components/ui", "skills"]
+  "rules": {
+    "import/no-relative-parent-imports": "off"
+  },
+  "ignorePatterns": ["!**/components/ui", "skills"],
+  "overrides": [
+    {
+      "files": ["packages/cli/**/*.ts"],
+      "rules": {
+        "func-style": "off",
+        "eslint-plugin-promise/avoid-new": "off",
+        "eslint-plugin-promise/param-names": "off"
+      }
+    }
+  ]
 }
