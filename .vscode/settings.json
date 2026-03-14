@@ -1,16 +1,12 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
-  "emmet.showExpandedAbbreviation": "never",
   "[javascript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "[javascriptreact]": {
+  "[typescript]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "[typescript]": {
+  "[javascriptreact]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[typescriptreact]": {
@@ -21,6 +17,21 @@
   },
   "[jsonc]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "[graphql]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  "emmet.showExpandedAbbreviation": "never",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit",
+    "source.fixAll.oxc": "explicit"
   },
   "[yaml]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
@@ -37,22 +48,13 @@
   "[handlebars]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "[css]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
   "[scss]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
   "[less]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
   },
-  "[graphql]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
   "[markdown]": {
     "editor.defaultFormatter": "oxc.oxc-vscode"
-  },
-  "editor.codeActionsOnSave": {
-    "source.fixAll.oxc": "explicit"
   }
 }

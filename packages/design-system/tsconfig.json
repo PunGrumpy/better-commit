@@ -4,15 +4,15 @@
     "baseUrl": ".",
     "plugins": [
       {
-        "name": "next",
-      },
+        "name": "next"
+      }
     ],
     "paths": {
       "@repo/shadcn-ui/*": ["./*"],
-      "@repo/*": ["../*"],
+      "@repo/*": ["../*"]
     },
-    "strictNullChecks": true,
+    "strictNullChecks": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules"]
 }
