@@ -20,5 +20,5 @@
     "newlinesBetween": true,
     "order": "asc",
   },
-  "ignorePatterns": ["!**/components/ui"],
+  "ignorePatterns": ["packages/design-system/components/ui"],
 }
