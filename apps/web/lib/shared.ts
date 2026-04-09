@@ -1,4 +1,4 @@
-export const appName = "Better Commit";
+export const appName = "BETTER COMMIT";
 export const docsRoute = "/docs";
 export const docsImageRoute = "/og/docs";
 export const docsContentRoute = "/llms.mdx/docs";
