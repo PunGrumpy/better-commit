@@ -22,7 +22,7 @@ jobs:
           - name: Format
             command: bun run format
           - name: Typecheck
-            command: bun run check-types
+            command: bun run typecheck
     steps:
       - name: Checkout
         uses: actions/checkout@v6

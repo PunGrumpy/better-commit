@@ -15,7 +15,7 @@ The repository is hosted at [PunGrumpy/better-commit](https://github.com/PunGrum
 5. Make your changes.
 6. From the repo root, run:
    - Tests: `bun run test`
-   - Typecheck: `bun run check-types`
+   - Typecheck: `bun run typecheck`
    - Lint: `bun run lint`
    - Format: `bun run format`
    - Build: `bun run build`
@@ -43,19 +43,19 @@ We use [Changesets](https://github.com/changesets/changesets) for versioning and
 - Keep changes focused; match existing style and patterns.
 - Add or update tests when behavior in `packages/cli` changes.
 - Include a changeset when the published CLI should be released.
-- Ensure checks you rely on pass locally (`bun run test`, `bun run check-types`, `bun run lint`).
+- Ensure checks you rely on pass locally (`bun run test`, `bun run typecheck`, `bun run lint`).
 
 ## Development commands (root)
 
-| Command               | Description                                  |
-| --------------------- | -------------------------------------------- |
-| `bun run dev`         | Run `dev` across the workspace via Turborepo |
-| `bun run build`       | Build all packages/apps                      |
-| `bun run test`        | Run tests via Turborepo                      |
-| `bun run check-types` | Typecheck across the workspace               |
-| `bun run lint`        | `ultracite check`                            |
-| `bun run format`      | `ultracite fix`                              |
-| `bun run changeset`   | Create a changeset file                      |
+| Command             | Description                                  |
+| ------------------- | -------------------------------------------- |
+| `bun run dev`       | Run `dev` across the workspace via Turborepo |
+| `bun run build`     | Build all packages/apps                      |
+| `bun run test`      | Run tests via Turborepo                      |
+| `bun run typecheck` | Typecheck across the workspace               |
+| `bun run lint`      | `ultracite check`                            |
+| `bun run format`    | `ultracite fix`                              |
+| `bun run changeset` | Create a changeset file                      |
 
 For local CLI iteration only: `cd packages/cli` and use `bun run dev` (watch build) or `bun run test`.
 
