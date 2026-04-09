@@ -1,15 +1,14 @@
 {
   "extends": "@repo/typescript-config/nextjs.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "plugins": [
       {
         "name": "next"
       }
     ],
     "paths": {
-      "@repo/shadcn-ui/*": ["./*"],
-      "@repo/*": ["../*"]
+      "@repo/*": ["../*"],
+      "@repo/design-system/*": ["./*"]
     },
     "strictNullChecks": true
   },
