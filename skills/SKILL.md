@@ -1,6 +1,6 @@
 ---
 name: better-commit
-description: Use better-commit CLI for AI-powered conventional commits. Run `bc` or `bc commit` to create commits with AI-generated messages. Use `bc init` to configure, `bc doctor` to verify setup.
+description: Use better-commit CLI for TypeScript-first conventional commits. Run `bc` or `bc commit` interactively. Configure via root `commit.config.ts` with `defineConfig` and plugins from `better-commit/config`.
 tags:
   - cli
   - commit
@@ -10,76 +10,71 @@ tags:
 
 # better-commit
 
-AI-powered commit message tool similar to Commitizen. Generates conventional commits from staged diffs using OpenAI, Anthropic, Cursor ACP, or local heuristics.
+Interactive conventional commits with optional AI, driven by **`commit.config.ts`** (plugins, resolved rules). Validates with **`bc check`** using the same rules as the interactive flow.
 
-## When to Use
+## When to use
 
-- Creating commits with conventional commit format (type(scope): subject)
-- Generating commit messages from staged diff
-- Amending the last commit message (`bc fix`)
-- Validating commit messages (`bc check`)
-- Retrying a commit with cached data (`bc retry`)
-- Enforcing consistent commit style across the team
+- Creating commits in `type(scope): subject` form with allowed types/scopes from config
+- Generating messages from staged diff (with **`aiSuggest`** plugin)
+- Amending the last message (`bc fix`)
+- Validating messages (`bc check`, including `COMMIT_EDITMSG` or a ref range)
+- Bootstrapping config (`bc init` → `commit.config.ts`)
 
 ## Commands
 
 | Command | Description |
-|---------|-------------|
+| ------- | ----------- |
 | `bc` / `bc commit` | Interactive commit (default) |
-| `bc init` | Create .better-commit.json |
-| `bc doctor` | Verify setup |
-| `bc check` | Validate commit messages |
+| `bc init` | Create `commit.config.ts` |
+| `bc doctor` | Verify config loads, list plugins, providers |
+| `bc check` | Validate last commit (or `--edit` / `--from`–`--to`) |
 | `bc fix` | Amend last commit message |
-| `bc retry` | Retry commit with cached data |
+| `bc retry` | Retry commit from cache |
 
 ## Options
 
 | Option | Commands | Description |
-|--------|----------|-------------|
-| `--no-ai` | commit, fix | Skip AI, use manual/heuristic only |
-| `--dry-run` | commit | Show message without committing |
+| ------ | -------- | ----------- |
+| `--no-ai` | commit, fix | Skip AI |
+| `--dry-run` | commit | Preview message only |
 | `-q, --quiet` | init | Skip prompts |
-| `-e, --edit` | check | Validate COMMIT_EDITMSG |
-| `--from <ref>` | check | Start of range (with --to) |
-| `--to <ref>` | check | End of range (with --from) |
+| `-e, --edit` | check | Validate `COMMIT_EDITMSG` |
+| `--from` / `--to` | check | Validate commit range |
 
-## Providers
+## Configuration
 
-Configure in `.better-commit.json`:
+Use **`commit.config.ts`** at the repo root (see `bc init`). Import helpers from **`better-commit/config`**:
 
-| Provider | Env var | Description |
-|----------|---------|-------------|
-| `auto` | — | Detect Cursor, Claude Code, or Codex; fallback to local |
-| `local` | — | Heuristic from file paths (no API) |
-| `openai` | `OPENAI_API_KEY` | OpenAI GPT |
-| `anthropic` | `ANTHROPIC_API_KEY` | Anthropic Claude |
-| `cursor` | — | Cursor ACP (agent acp) |
-| `claude-cli` | — | Claude CLI |
-| `codex-exec` | — | Codex exec |
+```typescript
+import {
+  aiSuggest,
+  conventionalCommits,
+  defineConfig,
+} from "better-commit/config";
 
-## Setup
-
-```bash
-bc init
+export default defineConfig({
+  plugins: [
+    conventionalCommits({ types: ["feat", "fix", "docs", "chore"] }),
+    aiSuggest({ provider: "auto" }),
+  ],
+});
 ```
 
-## Git Hooks
+Omit **`aiSuggest`** for offline-only / manual commits.
 
-Add to `.husky/prepare-commit-msg`:
+## Environment
+
+- `BETTER_COMMIT_NO_AI=1` — disable AI even if `aiSuggest` is configured
+
+## Git hooks
+
+Example `.husky/prepare-commit-msg`:
 
 ```bash
 exec bc commit
 ```
 
-## Environment
-
-- `BETTER_COMMIT_NO_AI=1` — Disable AI entirely (use manual/heuristic)
-
 ## Security
 
-- Diffs are sanitized before sending to AI (secrets, API keys redacted)
-- `allowUnsanitized: false` (default) — never send raw diff if sanitization fails
-
-## Diff Rendering
-
-Diffs are used as data (AI input), not displayed. For future use: [delta](https://github.com/dandavison/delta) for terminal; [@pierre/diffs](https://diffs.com/) for web UIs.
+- Diffs are sanitized before AI calls
+- Prefer local `better-commit` install for reproducible config loading

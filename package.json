@@ -9,7 +9,7 @@
     "catalog": {
       "@hookform/resolvers": "^5.2.2",
       "@tailwindcss/postcss": "^4.2.1",
-      "@types/node": "^25.4.0",
+      "@types/node": "^25.5.2",
       "@types/react": "^19.2.7",
       "@types/react-dom": "^19.2.3",
       "lucide-react": "^0.577.0",
@@ -35,6 +35,7 @@
     "lint": "ultracite check",
     "format": "ultracite fix",
     "check-types": "turbo run check-types",
+    "test": "turbo run test",
     "changeset": "changeset",
     "changeset:version": "changeset version",
     "changeset:publish": "turbo run build && changeset publish"
