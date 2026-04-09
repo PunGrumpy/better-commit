@@ -1,68 +1,49 @@
-# @better-commit/cli
+# better-commit
 
-**Conventional commits from one `commit.config.ts`:** plugins (`conventionalCommits`, optional `aiSuggest`), same rules in CI via **`bc check`**.
+**TypeScript-first conventional commits from a single `commit.config.ts` — composable plugins, optional AI, and the same rules in CI.**
+
+better-commit helps you and your AI tools ship consistent commit messages without juggling ad hoc scripts. One config file, one CLI (`bc` / `better-commit`), and you are productive in minutes.
 
 <div>
   <a href="https://www.npmjs.com/package/@better-commit/cli"><img src="https://img.shields.io/npm/v/@better-commit/cli" alt="npm version" /></a>
-  <a href="https://github.com/pungrumpy/better-commit/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@better-commit/cli" alt="license" /></a>
+  <a href="https://www.npmjs.com/package/@better-commit/cli"><img src="https://img.shields.io/npm/dm/@better-commit/cli" alt="npm downloads" /></a>
+  <a href="https://github.com/PunGrumpy/better-commit/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@better-commit/cli" alt="license" /></a>
 </div>
 
-## Quick start
+## Quick Start
 
-```bash
-npm install -D @better-commit/cli   # or: bun add -D @better-commit/cli
-bc init && bc
+```sh
+npm install -D @better-commit/cli
+bc init
+bc
 ```
 
-Binaries: **`bc`** and **`better-commit`** (same CLI). **`bc doctor`** checks Node, config, plugins, and AI providers. Global install: `bun add -g @better-commit/cli`.
+`bc` runs the interactive commit flow. Use `bc doctor` to verify Node, config load, plugins, and AI providers. Non-interactive `bc init` supports `-q`; add `-f` to replace an existing file.
 
-## Commands & flags
+## What you get
 
-- **`bc`** / **`bc commit`** — interactive commit · **`bc init`** — scaffold config · **`bc doctor`** — verify setup
-- **`bc check`** — validate message(s) · **`bc fix`** — amend last message · **`bc retry`** — reuse cached form data
+- **`conventionalCommits`** — Allowed types and optional scopes; drives validation in `bc check`.
+- **`defineConfig` + plugins** — Compose `conventionalCommits` (required) and optional **`aiSuggest`** for message suggestions.
+- **`bc check`** — Validate the last message, `COMMIT_EDITMSG`, or a ref range — same rules as locally, ideal for CI.
 
-**Flags:** `--no-ai` (commit, fix) · `--dry-run` (commit) · `-q` / `-f` (init) · `-e` / `--edit` (check: `COMMIT_EDITMSG`) · `--from` + `--to` (check: range; pass both). `bc check` modes are mutually exclusive: last commit (default), `--edit`, or `--from`/`--to`.
+## Key Features
 
-**Env:** `BETTER_COMMIT_NO_AI=1` disables AI (same as `--no-ai`), including when `aiSuggest` is configured.
+### ⚡ Interactive first
 
-## Config
+`bc` and `bc commit` guide the message; `bc fix` amends the last commit; `bc retry` reuses cached form data when you need another try.
 
-Discovery walks up for `commit.config.ts`, `commit.config.mts`, or `commit.config.js`. Import from **`@better-commit/cli/config`**:
+### 🎯 One config file
 
-```typescript
-import {
-  aiSuggest,
-  conventionalCommits,
-  defineConfig,
-} from "@better-commit/cli/config";
+Discovery walks up for `commit.config.ts`, `commit.config.mts`, or `commit.config.js`. Import helpers from **`@better-commit/cli/config`** for typed, small surface area.
 
-export default defineConfig({
-  plugins: [
-    conventionalCommits({
-      types: ["feat", "fix", "docs", "style", "refactor", "test", "chore"],
-    }),
-    aiSuggest({ provider: "auto" }),
-  ],
-});
-```
+### 🤖 AI-ready, not AI-required
 
-`conventionalCommits` is required (types, optional scopes / `bc check` strictness). `aiSuggest` is optional.
+Optional `aiSuggest` plugs into Cursor, Claude, Codex, OpenAI, Anthropic, and more. Use `--no-ai` or `BETTER_COMMIT_NO_AI=1` for fully manual flows.
 
-## AI providers
+### 🏗️ CI and hooks
 
-With `aiSuggest`, `provider` follows the same order as **`bc doctor`**: `auto`, `local`, `openai` (`OPENAI_API_KEY`), `anthropic` (`ANTHROPIC_API_KEY`), `cursor`, `claude-cli`, `codex-exec`.
+Run `bc check` in pipelines; wire `exec bc commit` in Husky `prepare-commit-msg` so local commits match automation.
 
-## Hooks & CI
+---
 
-```bash
-# e.g. Husky prepare-commit-msg
-exec bc commit
-```
-
-```bash
-bc check
-```
-
-## Security
-
-Diffs are sanitized before AI calls. Prefer a local devDependency so config and lockfile stay reproducible.
+Install **`@better-commit/cli`** from npm. For flags, `bc check` modes, AI providers (`bc doctor`), and security notes, see the **[repository](https://github.com/pungrumpy/better-commit)** and package source.
