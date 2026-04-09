@@ -87,7 +87,7 @@ export const runCheck = async (options: CheckOptions): Promise<void> => {
     }
     const result = validateCommitMessage(message, config);
     reportValidationResult(result, "Invalid commit message");
-  } else if (hasFrom && hasTo) {
+  } else if (options.from !== undefined && options.to !== undefined) {
     const commits = await getCommitsInRange(options.from, options.to, cwd);
     let hasFailure = false;
     for (const { hash, message } of commits) {
