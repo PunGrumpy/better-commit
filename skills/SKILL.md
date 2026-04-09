@@ -22,24 +22,24 @@ Interactive conventional commits with optional AI, driven by **`commit.config.ts
 
 ## Commands
 
-| Command | Description |
-| ------- | ----------- |
-| `bc` / `bc commit` | Interactive commit (default) |
-| `bc init` | Create `commit.config.ts` |
-| `bc doctor` | Verify config loads, list plugins, providers |
-| `bc check` | Validate last commit (or `--edit` / `--from`–`--to`) |
-| `bc fix` | Amend last commit message |
-| `bc retry` | Retry commit from cache |
+| Command            | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `bc` / `bc commit` | Interactive commit (default)                         |
+| `bc init`          | Create `commit.config.ts`                            |
+| `bc doctor`        | Verify config loads, list plugins, providers         |
+| `bc check`         | Validate last commit (or `--edit` / `--from`–`--to`) |
+| `bc fix`           | Amend last commit message                            |
+| `bc retry`         | Retry commit from cache                              |
 
 ## Options
 
-| Option | Commands | Description |
-| ------ | -------- | ----------- |
-| `--no-ai` | commit, fix | Skip AI |
-| `--dry-run` | commit | Preview message only |
-| `-q, --quiet` | init | Skip prompts |
-| `-e, --edit` | check | Validate `COMMIT_EDITMSG` |
-| `--from` / `--to` | check | Validate commit range |
+| Option            | Commands    | Description               |
+| ----------------- | ----------- | ------------------------- |
+| `--no-ai`         | commit, fix | Skip AI                   |
+| `--dry-run`       | commit      | Preview message only      |
+| `-q, --quiet`     | init        | Skip prompts              |
+| `-e, --edit`      | check       | Validate `COMMIT_EDITMSG` |
+| `--from` / `--to` | check       | Validate commit range     |
 
 ## Configuration
 
