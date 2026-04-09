@@ -60,12 +60,23 @@ export const generateMetadata = async (
     notFound();
   }
 
+  const { url } = getPageImage(page);
+
   return {
     description: page.data.description,
     openGraph: {
-      images: getPageImage(page).url,
+      description: page.data.description,
+      images: [{ height: 630, url, width: 1200 }],
+      title: `${page.data.title} | Better Commit`,
     },
-    title: page.data.title,
+    title: `${page.data.title} | Better Commit`,
+    twitter: {
+      card: "summary_large_image",
+      creator: "@PunGrumpy",
+      description: page.data.description,
+      images: [{ height: 630, url, width: 1200 }],
+      title: `${page.data.title} | Better Commit`,
+    },
   };
 };
 
