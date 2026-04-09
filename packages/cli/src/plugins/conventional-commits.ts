@@ -1,10 +1,10 @@
 import type { BetterCommitPlugin } from "../config/types.js";
 
-export function conventionalCommits(options: {
+export const conventionalCommits = (options: {
   scopes?: string[];
   strictScopes?: boolean;
   types: string[];
-}): BetterCommitPlugin {
+}): BetterCommitPlugin => {
   const hasScopeList =
     options.scopes !== undefined && options.scopes.length > 0;
   return {
@@ -16,4 +16,4 @@ export function conventionalCommits(options: {
       types: options.types,
     },
   };
-}
+};

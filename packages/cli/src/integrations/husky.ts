@@ -13,5 +13,5 @@ export const installHuskyHook = (cwd: string = process.cwd()): void => {
     mkdirSync(huskyDir, { recursive: true });
   }
   const hookPath = join(huskyDir, "prepare-commit-msg");
-  writeFileSync(hookPath, HUSKY_HOOK, "utf8");
+  writeFileSync(hookPath, HUSKY_HOOK, "utf-8");
 };

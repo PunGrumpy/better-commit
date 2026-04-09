@@ -1,7 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
 import type { GenerateMessageContext } from "../ai/types.js";
 
@@ -10,7 +9,7 @@ Format: type(scope): subject
 Keep subject under 72 chars, imperative mood.`;
 
 const PROMPT_PATH = (() => {
-  const dir = dirname(fileURLToPath(import.meta.url));
+  const dir = import.meta.dirname;
   return join(dir, "..", "..", "config", "prompts", "commit.txt");
 })();
 
@@ -22,7 +21,7 @@ const loadPromptFromFile = async (): Promise<string> => {
     return DEFAULT_PROMPT;
   }
   try {
-    const raw = await readFile(PROMPT_PATH, "utf8");
+    const raw = await readFile(PROMPT_PATH, "utf-8");
     const content = raw.trim();
     promptCache.set("", content);
     return content;
@@ -42,7 +41,7 @@ export const getCommitPrompt = (customPrompt?: string): string => {
   }
   if (existsSync(PROMPT_PATH)) {
     try {
-      const content = readFileSync(PROMPT_PATH, "utf8").trim();
+      const content = readFileSync(PROMPT_PATH, "utf-8").trim();
       promptCache.set("", content);
       return content;
     } catch {

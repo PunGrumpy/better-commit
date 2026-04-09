@@ -3,12 +3,12 @@ import {
   createOpenAIProvider,
 } from "./cloud-providers.js";
 import { autoProvider, localProvider } from "./local-auto.js";
+import { ProviderRegistry } from "./registry.js";
 import {
   claudeCliProvider,
   codexExecProvider,
   cursorAcpProvider,
 } from "./subprocess-agents.js";
-import { ProviderRegistry } from "./registry.js";
 
 ProviderRegistry.register(localProvider);
 ProviderRegistry.register(autoProvider);

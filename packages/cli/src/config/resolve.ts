@@ -1,9 +1,7 @@
 import { z } from "zod";
 
-import {
-  DuplicatePluginError,
-  MissingConventionalPluginError,
-} from "./errors.js";
+import { DuplicatePluginError } from "./duplicate-plugin-error.js";
+import { MissingConventionalPluginError } from "./missing-conventional-plugin-error.js";
 import type { ResolvedCommitConfig, UserConfig } from "./types.js";
 
 const providerNameSchema = z.enum([
@@ -35,7 +33,7 @@ const resolvedSchema = z.object({
 
 const CONVENTIONAL_ID = "conventional-commits";
 
-export function mergeUserConfig(config: UserConfig): ResolvedCommitConfig {
+export const mergeUserConfig = (config: UserConfig): ResolvedCommitConfig => {
   const { plugins } = config;
   const seen = new Set<string>();
   for (const plugin of plugins) {
@@ -100,4 +98,4 @@ export function mergeUserConfig(config: UserConfig): ResolvedCommitConfig {
   };
 
   return resolvedSchema.parse(merged) as ResolvedCommitConfig;
-}
+};

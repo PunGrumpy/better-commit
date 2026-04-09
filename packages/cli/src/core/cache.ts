@@ -22,7 +22,7 @@ export const readCache = (cwd: string = process.cwd()): CommitCache | null => {
     return null;
   }
   try {
-    const raw = JSON.parse(readFileSync(path, "utf8"));
+    const raw = JSON.parse(readFileSync(path, "utf-8"));
     if (
       typeof raw.type === "string" &&
       typeof raw.scope === "string" &&
@@ -41,5 +41,5 @@ export const writeCache = async (
   cwd: string = process.cwd()
 ): Promise<void> => {
   const path = getCachePath(cwd);
-  await writeFile(path, JSON.stringify(data, null, 2), "utf8");
+  await writeFile(path, JSON.stringify(data, null, 2), "utf-8");
 };

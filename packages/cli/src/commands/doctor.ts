@@ -1,6 +1,7 @@
 import * as p from "@clack/prompts";
 
 import { detectInstalledAgents, getPreferredAgent } from "../agents.js";
+import { ProviderRegistry } from "../ai/index.js";
 import {
   ConfigLoadError,
   findCommitConfigPath,
@@ -8,7 +9,6 @@ import {
 } from "../config/load.js";
 import { exitFailure, exitSuccess } from "../core/exit.js";
 import { hasStagedFiles, isGitRepo } from "../core/git.js";
-import { ProviderRegistry } from "../ai/index.js";
 
 type CheckStatus = "fail" | "pass";
 
@@ -18,7 +18,7 @@ interface CheckRow {
   status: CheckStatus;
 }
 
-function addConfigChecks(checks: CheckRow[], cwd: string): void {
+const addConfigChecks = (checks: CheckRow[], cwd: string): void => {
   const configPath = findCommitConfigPath(cwd);
   if (!configPath) {
     checks.push({
@@ -80,7 +80,7 @@ function addConfigChecks(checks: CheckRow[], cwd: string): void {
       status: "fail",
     });
   }
-}
+};
 
 export const runDoctor = async (cwd: string = process.cwd()): Promise<void> => {
   p.intro("better-commit doctor");

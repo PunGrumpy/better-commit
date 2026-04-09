@@ -1,9 +1,7 @@
 import type { UserConfig } from "./config/types.js";
 
-export {
-  DuplicatePluginError,
-  MissingConventionalPluginError,
-} from "./config/errors.js";
+export { DuplicatePluginError } from "./config/duplicate-plugin-error.js";
+export { MissingConventionalPluginError } from "./config/missing-conventional-plugin-error.js";
 export { mergeUserConfig } from "./config/resolve.js";
 export { aiSuggest, conventionalCommits } from "./plugins/index.js";
 export type {
@@ -15,6 +13,4 @@ export type {
 } from "./config/types.js";
 export { PLUGIN_API_VERSION } from "./config/types.js";
 
-export function defineConfig(config: UserConfig): UserConfig {
-  return config;
-}
+export const defineConfig = (config: UserConfig): UserConfig => config;

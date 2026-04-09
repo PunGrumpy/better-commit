@@ -55,7 +55,7 @@ export const getCommitEditMessage = (cwd: string = process.cwd()): string => {
   if (!existsSync(path)) {
     return "";
   }
-  return readFileSync(path, "utf8");
+  return readFileSync(path, "utf-8");
 };
 
 export interface CommitInRange {

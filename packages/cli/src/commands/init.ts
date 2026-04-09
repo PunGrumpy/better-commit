@@ -57,7 +57,7 @@ export const runInit = async (options: InitOptions): Promise<void> => {
     }
   }
 
-  writeFileSync(configPath, TEMPLATE, "utf8");
+  writeFileSync(configPath, TEMPLATE, "utf-8");
   if (!options.quiet) {
     p.outro(`Created ${basename(configPath)}`);
   }

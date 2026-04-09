@@ -1,6 +1,6 @@
+import type { ResolvedCommitConfig } from "../config/types.js";
 import type { ParsedCommitMessage } from "../core/commit-format.js";
 import { formatCommitMessage } from "../core/commit-format.js";
-import type { ResolvedCommitConfig } from "../config/types.js";
 import {
   showAiContext,
   selectType,

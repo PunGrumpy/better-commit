@@ -1,5 +1,8 @@
+import type {
+  ResolvedCommitConfig,
+  ValidationResult,
+} from "../config/types.js";
 import { parseCommitMessage } from "./commit-format.js";
-import type { ResolvedCommitConfig, ValidationResult } from "../config/types.js";
 
 const DEFAULT_SUBJECT_MAX_LENGTH = 72;
 

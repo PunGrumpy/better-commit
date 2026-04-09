@@ -1,5 +1,7 @@
 import * as p from "@clack/prompts";
 
+import { resolveProvider } from "../ai/index.js";
+import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
 import { writeCache } from "../core/cache.js";
 import { parseCommitMessage } from "../core/commit-format.js";
 import { exitFailure, exitSuccess } from "../core/exit.js";
@@ -10,20 +12,18 @@ import {
   isGitRepo,
   stageAll,
 } from "../core/git.js";
-import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
+import { sanitizeDiff, truncateDiff } from "../core/sanitize.js";
 import { getCommitPromptAsync } from "../prompts/commit-prompt.js";
 import {
   collectFormFields,
   formFieldsToMessage,
-  type FormFields,
 } from "../prompts/form-fields.js";
+import type { FormFields } from "../prompts/form-fields.js";
 import {
   confirmMessage,
   confirmStageAll,
   selectUseAI,
 } from "../prompts/interactive.js";
-import { resolveProvider } from "../ai/index.js";
-import { sanitizeDiff, truncateDiff } from "../core/sanitize.js";
 
 export interface CommitOptions {
   cwd?: string;

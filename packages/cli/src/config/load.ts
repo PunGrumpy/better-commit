@@ -3,12 +3,12 @@ import { dirname, join, resolve } from "node:path";
 
 import { createJiti } from "jiti";
 
-import { ConfigLoadError } from "./errors.js";
+import { ConfigLoadError } from "./config-load-error.js";
 import { mergeUserConfig } from "./resolve.js";
 import type { ResolvedCommitConfig, UserConfig } from "./types.js";
 
-export { ConfigLoadError } from "./errors.js";
-export type { ConfigErrorCode } from "./errors.js";
+export { ConfigLoadError } from "./config-load-error.js";
+export type { ConfigErrorCode } from "./config-error-code.js";
 
 const CONFIG_FILENAMES = [
   "commit.config.ts",
@@ -16,7 +16,7 @@ const CONFIG_FILENAMES = [
   "commit.config.js",
 ] as const;
 
-function walkUpDirectories(startDir: string): string[] {
+const walkUpDirectories = (startDir: string): string[] => {
   const dirs: string[] = [];
   let current = resolve(startDir);
   while (true) {
@@ -28,11 +28,11 @@ function walkUpDirectories(startDir: string): string[] {
     current = parent;
   }
   return dirs;
-}
+};
 
-export function findCommitConfigPath(
+export const findCommitConfigPath = (
   cwd: string = process.cwd()
-): string | null {
+): string | null => {
   for (const dir of walkUpDirectories(cwd)) {
     for (const name of CONFIG_FILENAMES) {
       const full = join(dir, name);
@@ -42,9 +42,9 @@ export function findCommitConfigPath(
     }
   }
   return null;
-}
+};
 
-function loadModule(configPath: string): unknown {
+const loadModule = (configPath: string): unknown => {
   const jiti = createJiti(import.meta.url, {
     interopDefault: true,
   });
@@ -57,9 +57,9 @@ function loadModule(configPath: string): unknown {
       { cause: error, pathTried: configPath }
     );
   }
-}
+};
 
-export function loadUserConfigSync(configPath: string): UserConfig {
+export const loadUserConfigSync = (configPath: string): UserConfig => {
   const mod = loadModule(configPath) as { default?: unknown } | UserConfig;
   const raw =
     mod !== null &&
@@ -81,11 +81,11 @@ export function loadUserConfigSync(configPath: string): UserConfig {
     );
   }
   return raw as UserConfig;
-}
+};
 
-export function loadResolvedConfigFromPath(
+export const loadResolvedConfigFromPath = (
   configPath: string
-): ResolvedCommitConfig {
+): ResolvedCommitConfig => {
   const user = loadUserConfigSync(configPath);
   try {
     return mergeUserConfig(user);
@@ -99,12 +99,14 @@ export function loadResolvedConfigFromPath(
       { cause: error, pathTried: configPath }
     );
   }
-}
+};
 
-export function loadResolvedConfig(cwd: string = process.cwd()): {
+export const loadResolvedConfig = (
+  cwd: string = process.cwd()
+): {
   config: ResolvedCommitConfig;
   path: string;
-} {
+} => {
   const path = findCommitConfigPath(cwd);
   if (!path) {
     throw new ConfigLoadError(
@@ -117,4 +119,4 @@ export function loadResolvedConfig(cwd: string = process.cwd()): {
     config: loadResolvedConfigFromPath(path),
     path,
   };
-}
+};

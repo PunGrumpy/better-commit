@@ -1,5 +1,6 @@
 import * as p from "@clack/prompts";
 
+import { resolveProvider } from "../ai/index.js";
 import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
 import { parseCommitMessage } from "../core/commit-format.js";
 import { exitFailure, exitSuccess } from "../core/exit.js";
@@ -9,15 +10,14 @@ import {
   getLastCommitMessage,
   isGitRepo,
 } from "../core/git.js";
+import { sanitizeDiff, truncateDiff } from "../core/sanitize.js";
+import { validateCommitMessage } from "../core/validate-commit.js";
 import { getCommitPromptAsync } from "../prompts/commit-prompt.js";
 import {
   collectFormFields,
   formFieldsToMessage,
 } from "../prompts/form-fields.js";
 import { confirmMessage } from "../prompts/interactive.js";
-import { resolveProvider } from "../ai/index.js";
-import { sanitizeDiff, truncateDiff } from "../core/sanitize.js";
-import { validateCommitMessage } from "../core/validate-commit.js";
 
 export interface FixOptions {
   cwd?: string;
