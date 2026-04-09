@@ -15,24 +15,32 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "fumadocs-ui": "16.7.11",
     "input-otp": "^1.4.2",
     "lucide-react": "catalog:",
-    "next-themes": "^0.4.6",
+    "motion": "catalog:",
+    "next": "catalog:",
+    "next-themes": "catalog:",
     "radix-ui": "latest",
     "react": "catalog:",
     "react-day-picker": "^9.14.0",
     "react-dom": "catalog:",
     "react-hook-form": "catalog:",
     "react-resizable-panels": "^4.9.0",
-    "recharts": "3.8.0",
+    "recharts": "3.8.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
+    "tw-animate-css": "catalog:",
     "vaul": "^1.1.2",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "catalog:",
+    "@types/node": "catalog:",
     "@types/react": "catalog:",
-    "@types/react-dom": "catalog:"
+    "shadcn": "^4.1.2",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:"
   }
 }

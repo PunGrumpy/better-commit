@@ -126,7 +126,7 @@
     @apply border-border;
   }
   ::selection {
-    @apply bg-tertiary text-background;
+    @apply bg-foreground text-background;
   }
   * {
     @apply border-border outline-ring/50;
@@ -157,7 +157,7 @@
   input:focus,
   textarea:focus,
   a:focus {
-    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-tertiary focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
   @media (prefers-reduced-motion: reduce) {
     *,
