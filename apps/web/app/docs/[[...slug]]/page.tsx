@@ -21,7 +21,7 @@ const Page = async (props: PageProps<"/docs/[[...slug]]">) => {
     notFound();
   }
 
-  const MDX = page.data.body;
+  const MDXContent = page.data.body;
   const markdownUrl = getPageMarkdownUrl(page).url;
 
   return (
@@ -38,7 +38,7 @@ const Page = async (props: PageProps<"/docs/[[...slug]]">) => {
         />
       </div>
       <DocsBody>
-        <MDX
+        <MDXContent
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths
             a: createRelativeLink(source, page),
