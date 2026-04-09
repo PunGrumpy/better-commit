@@ -12,7 +12,7 @@
   "author": "Noppakorn Kaewsalabnil <hello@pungrumpy.com>",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pungrumpy/better-commit.git"
+    "url": "git+https://github.com/PunGrumpy/better-commit.git"
   },
   "bin": {
     "bc": "dist/index.mjs",
