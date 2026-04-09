@@ -20,5 +20,5 @@
     "newlinesBetween": true,
     "order": "asc",
   },
-  "ignorePatterns": ["!**/components/ui", "skills"],
+  "ignorePatterns": ["!**/components/ui"],
 }

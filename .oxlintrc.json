@@ -6,18 +6,5 @@
     "./node_modules/ultracite/config/oxlint/next/.oxlintrc.json",
     "./node_modules/ultracite/config/oxlint/vitest/.oxlintrc.json"
   ],
-  "rules": {
-    "import/no-relative-parent-imports": "off"
-  },
-  "ignorePatterns": ["!**/components/ui", "skills"],
-  "overrides": [
-    {
-      "files": ["packages/cli/**/*.ts"],
-      "rules": {
-        "func-style": "off",
-        "eslint-plugin-promise/avoid-new": "off",
-        "eslint-plugin-promise/param-names": "off"
-      }
-    }
-  ]
+  "ignorePatterns": ["!**/components/ui"]
 }
