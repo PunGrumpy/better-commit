@@ -1,6 +1,6 @@
 import * as p from "@clack/prompts";
 
-import { exitFailure, exitSuccess } from "../exit.js";
+import { exitFailure, exitSuccess } from "../core/exit.js";
 
 export const showAiContext = (isAiSuggested: boolean): void => {
   if (!isAiSuggested) {
@@ -41,12 +41,42 @@ export const selectType = async (
   return result as string;
 };
 
-export const inputScope = async (suggested = ""): Promise<string> => {
+export const inputScope = async (
+  allowedScopes: string[] | undefined,
+  strictScopes: boolean,
+  suggested = ""
+): Promise<string> => {
+  if (allowedScopes && allowedScopes.length > 0 && strictScopes) {
+    let ordered: string[];
+    if (suggested && allowedScopes.includes(suggested)) {
+      ordered = [suggested, ...allowedScopes.filter((s) => s !== suggested)];
+    } else if (suggested) {
+      ordered = [suggested, ...allowedScopes];
+    } else {
+      ordered = [...allowedScopes];
+    }
+    const result = await p.select({
+      message: "Scope (optional)",
+      options: [
+        { label: "(none)", value: "" },
+        ...ordered.map((s) => ({ label: s, value: s })),
+      ],
+    });
+    if (p.isCancel(result)) {
+      exitSuccess();
+    }
+    return result as string;
+  }
+
+  const placeholder =
+    allowedScopes && allowedScopes.length > 0
+      ? `e.g. ${allowedScopes.slice(0, 3).join(", ")}`
+      : "e.g. api, auth";
   const message = "Scope (optional)";
   const result = await p.text({
     initialValue: suggested,
     message,
-    placeholder: "e.g. api, auth",
+    placeholder,
   });
   if (p.isCancel(result)) {
     exitSuccess();

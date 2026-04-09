@@ -1,29 +1,53 @@
-import { writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, writeFileSync } from "node:fs";
+import { basename, join } from "node:path";
 
 import * as p from "@clack/prompts";
 
-import { loadConfig, DEFAULT_CONFIG } from "../config.js";
-import { exitSuccess } from "../exit.js";
+import { exitSuccess } from "../core/exit.js";
+
+const COMMIT_CONFIG_FILENAME = "commit.config.ts";
+
+const TEMPLATE = `import {
+  aiSuggest,
+  conventionalCommits,
+  defineConfig,
+} from "better-commit/config";
+
+export default defineConfig({
+  plugins: [
+    conventionalCommits({
+      types: [
+        "feat",
+        "fix",
+        "docs",
+        "style",
+        "refactor",
+        "test",
+        "chore",
+        "perf",
+        "ci",
+        "build",
+      ],
+    }),
+    aiSuggest({ provider: "auto" }),
+  ],
+});
+`;
 
 export interface InitOptions {
-  quiet?: boolean;
   cwd?: string;
+  quiet?: boolean;
 }
 
 export const runInit = async (options: InitOptions): Promise<void> => {
   const cwd = options.cwd ?? process.cwd();
-  const configPath = join(cwd, ".better-commit.json");
+  const configPath = join(cwd, COMMIT_CONFIG_FILENAME);
 
-  const existing = await loadConfig(cwd);
-  const hasExisting =
-    Object.keys(existing).length > 0 &&
-    JSON.stringify(existing) !== JSON.stringify(DEFAULT_CONFIG);
-
-  if (hasExisting && !options.quiet) {
+  const existing = existsSync(configPath);
+  if (existing && !options.quiet) {
     const overwrite = await p.confirm({
       initialValue: false,
-      message: ".better-commit.json exists. Overwrite?",
+      message: `${COMMIT_CONFIG_FILENAME} exists. Overwrite?`,
     });
     if (p.isCancel(overwrite)) {
       exitSuccess();
@@ -33,14 +57,8 @@ export const runInit = async (options: InitOptions): Promise<void> => {
     }
   }
 
-  const config = {
-    allowUnsanitized: false,
-    conventionalTypes: DEFAULT_CONFIG.conventionalTypes,
-    provider: "auto",
-  };
-
-  writeFileSync(configPath, JSON.stringify(config, null, 2), "utf8");
+  writeFileSync(configPath, TEMPLATE, "utf8");
   if (!options.quiet) {
-    p.outro(`Created ${configPath}`);
+    p.outro(`Created ${basename(configPath)}`);
   }
 };

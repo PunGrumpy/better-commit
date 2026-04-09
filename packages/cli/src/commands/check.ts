@@ -1,21 +1,21 @@
 import * as p from "@clack/prompts";
 
-import { loadConfig } from "../config.js";
-import { exitFailure, exitSuccess } from "../exit.js";
+import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
+import type { ValidationResult } from "../config/types.js";
+import { exitFailure, exitSuccess } from "../core/exit.js";
 import {
-  getLastCommitMessage,
   getCommitEditMessage,
   getCommitsInRange,
+  getLastCommitMessage,
   isGitRepo,
-} from "../git.js";
-import type { ValidationResult } from "../validate.js";
-import { validateCommitMessage } from "../validate.js";
+} from "../core/git.js";
+import { validateCommitMessage } from "../core/validate-commit.js";
 
 export interface CheckOptions {
+  cwd?: string;
   edit?: boolean;
   from?: string;
   to?: string;
-  cwd?: string;
 }
 
 const reportValidationResult = (
@@ -53,7 +53,16 @@ export const runCheck = async (options: CheckOptions): Promise<void> => {
     exitFailure();
   }
 
-  const config = await loadConfig(cwd);
+  let config;
+  try {
+    ({ config } = loadResolvedConfig(cwd));
+  } catch (error) {
+    if (error instanceof ConfigLoadError) {
+      p.log.error(error.message);
+      exitFailure();
+    }
+    throw error;
+  }
 
   if (options.edit) {
     const message = getCommitEditMessage(cwd);

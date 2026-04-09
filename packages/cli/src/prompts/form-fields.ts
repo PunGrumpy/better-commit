@@ -1,6 +1,6 @@
-import type { ParsedCommitMessage } from "../commit-format.js";
-import { formatCommitMessage } from "../commit-format.js";
-import type { BetterCommitConfig } from "../config.js";
+import type { ParsedCommitMessage } from "../core/commit-format.js";
+import { formatCommitMessage } from "../core/commit-format.js";
+import type { ResolvedCommitConfig } from "../config/types.js";
 import {
   showAiContext,
   selectType,
@@ -21,17 +21,21 @@ export interface FormFields {
 }
 
 export const collectFormFields = async (
-  config: BetterCommitConfig,
+  config: ResolvedCommitConfig,
   parsed: ParsedCommitMessage | null,
   isAiSuggested: boolean
 ): Promise<FormFields> => {
   showAiContext(isAiSuggested);
   const type = await selectType(
-    config.conventionalTypes,
+    config.rules.types,
     parsed?.type,
     isAiSuggested
   );
-  const scope = await inputScope(parsed?.scope ?? "");
+  const scope = await inputScope(
+    config.rules.scopes,
+    config.rules.strictScopes,
+    parsed?.scope ?? ""
+  );
   const subject = await inputSubject(parsed?.subject ?? "");
   const breaking = await confirmBreakingChange(parsed?.breaking ?? false);
   let body = "";

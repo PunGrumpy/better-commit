@@ -1,27 +1,27 @@
 import * as p from "@clack/prompts";
 
-import { parseCommitMessage } from "../commit-format.js";
-import { loadConfig } from "../config.js";
-import { exitFailure, exitSuccess } from "../exit.js";
+import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
+import { parseCommitMessage } from "../core/commit-format.js";
+import { exitFailure, exitSuccess } from "../core/exit.js";
 import {
-  isGitRepo,
-  getLastCommitMessage,
-  getLastCommitDiff,
   commitAmend,
-} from "../git.js";
+  getLastCommitDiff,
+  getLastCommitMessage,
+  isGitRepo,
+} from "../core/git.js";
 import { getCommitPromptAsync } from "../prompts/commit-prompt.js";
 import {
   collectFormFields,
   formFieldsToMessage,
 } from "../prompts/form-fields.js";
 import { confirmMessage } from "../prompts/interactive.js";
-import { resolveProvider } from "../providers/resolve.js";
-import { sanitizeDiff, truncateDiff } from "../sanitize.js";
-import { validateCommitMessage } from "../validate.js";
+import { resolveProvider } from "../ai/index.js";
+import { sanitizeDiff, truncateDiff } from "../core/sanitize.js";
+import { validateCommitMessage } from "../core/validate-commit.js";
 
 export interface FixOptions {
-  noAi?: boolean;
   cwd?: string;
+  noAi?: boolean;
 }
 
 export const runFix = async (options: FixOptions): Promise<void> => {
@@ -34,11 +34,20 @@ export const runFix = async (options: FixOptions): Promise<void> => {
     exitFailure();
   }
 
-  const [lastMessage, config, lastCommitDiff] = await Promise.all([
+  let config;
+  try {
+    ({ config } = loadResolvedConfig(cwd));
+  } catch (error) {
+    if (error instanceof ConfigLoadError) {
+      p.log.error(error.message);
+      exitFailure();
+    }
+    throw error;
+  }
+
+  const [lastMessage, lastCommitDiff] = await Promise.all([
     getLastCommitMessage(cwd),
-    loadConfig(cwd),
     getLastCommitDiff(cwd),
-    /* Warm prompt cache */
     getCommitPromptAsync(),
   ]);
   if (!lastMessage.trim()) {
@@ -74,7 +83,7 @@ export const runFix = async (options: FixOptions): Promise<void> => {
     spinner.start(`Generating fix with ${providerName}...`);
     try {
       const rawMessage = await effectiveProvider.generateMessage(sanitized, {
-        customPrompt: config.customPrompt,
+        customPrompt: config.ai?.customPrompt,
         existingMessage: lastMessage,
         preferredAgent: preferredAgent ?? undefined,
       });

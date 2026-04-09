@@ -8,7 +8,7 @@ import { runDoctor } from "./commands/doctor.js";
 import { runFix } from "./commands/fix.js";
 import { runInit } from "./commands/init.js";
 import { runRetry } from "./commands/retry.js";
-import "./providers/index.js";
+import "./ai/index.js";
 
 const program = new Command();
 

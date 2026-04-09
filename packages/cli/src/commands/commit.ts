@@ -1,34 +1,34 @@
 import * as p from "@clack/prompts";
 
-import { writeCache } from "../cache.js";
-import { parseCommitMessage } from "../commit-format.js";
-import { loadConfig } from "../config.js";
-import { exitFailure, exitSuccess } from "../exit.js";
+import { writeCache } from "../core/cache.js";
+import { parseCommitMessage } from "../core/commit-format.js";
+import { exitFailure, exitSuccess } from "../core/exit.js";
 import {
-  isGitRepo,
-  hasStagedFiles,
-  getStagedDiff,
-  stageAll,
   commit as gitCommit,
-} from "../git.js";
+  getStagedDiff,
+  hasStagedFiles,
+  isGitRepo,
+  stageAll,
+} from "../core/git.js";
+import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
 import { getCommitPromptAsync } from "../prompts/commit-prompt.js";
 import {
   collectFormFields,
   formFieldsToMessage,
+  type FormFields,
 } from "../prompts/form-fields.js";
-import type { FormFields } from "../prompts/form-fields.js";
 import {
   confirmMessage,
   confirmStageAll,
   selectUseAI,
 } from "../prompts/interactive.js";
-import { resolveProvider } from "../providers/resolve.js";
-import { sanitizeDiff, truncateDiff } from "../sanitize.js";
+import { resolveProvider } from "../ai/index.js";
+import { sanitizeDiff, truncateDiff } from "../core/sanitize.js";
 
 export interface CommitOptions {
+  cwd?: string;
   dryRun?: boolean;
   noAi?: boolean;
-  cwd?: string;
 }
 
 const ensureStaged = async (cwd: string): Promise<void> => {
@@ -61,12 +61,22 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
 
   await ensureStaged(cwd);
 
-  const [config, diff] = await Promise.all([
-    loadConfig(cwd),
+  let config;
+  try {
+    ({ config } = loadResolvedConfig(cwd));
+  } catch (error) {
+    if (error instanceof ConfigLoadError) {
+      p.log.error(error.message);
+      exitFailure();
+    }
+    throw error;
+  }
+
+  const [diff] = await Promise.all([
     getStagedDiff(cwd),
-    /* Warm prompt cache */
     getCommitPromptAsync(),
   ]);
+
   const truncated = truncateDiff(diff);
   const sanitized = sanitizeDiff(truncated);
 
@@ -79,7 +89,7 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
     spinner.start(`Generating message with ${providerName}...`);
     try {
       const rawMessage = await effectiveProvider.generateMessage(sanitized, {
-        customPrompt: config.customPrompt,
+        customPrompt: config.ai?.customPrompt,
         preferredAgent: preferredAgent ?? undefined,
       });
       spinner.stop("Generated");

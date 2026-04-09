@@ -1,15 +1,15 @@
 import * as p from "@clack/prompts";
 
-import type { CommitCache } from "../cache.js";
-import { readCache } from "../cache.js";
-import { formatCommitMessage } from "../commit-format.js";
-import { exitFailure } from "../exit.js";
+import type { CommitCache } from "../core/cache.js";
+import { readCache } from "../core/cache.js";
+import { formatCommitMessage } from "../core/commit-format.js";
+import { exitFailure } from "../core/exit.js";
 import {
-  isGitRepo,
-  hasStagedFiles,
-  stageAll,
   commit as gitCommit,
-} from "../git.js";
+  hasStagedFiles,
+  isGitRepo,
+  stageAll,
+} from "../core/git.js";
 import { confirmStageAll } from "../prompts/interactive.js";
 
 export interface RetryOptions {

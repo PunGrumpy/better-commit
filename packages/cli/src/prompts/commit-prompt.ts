@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import type { GenerateMessageContext } from "../providers/types.js";
+import type { GenerateMessageContext } from "../ai/types.js";
 
 const DEFAULT_PROMPT = `You generate conventional commit messages. Output ONLY the commit message, no explanation.
 Format: type(scope): subject
@@ -11,7 +11,7 @@ Keep subject under 72 chars, imperative mood.`;
 
 const PROMPT_PATH = (() => {
   const dir = dirname(fileURLToPath(import.meta.url));
-  return join(dir, "..", "config", "prompts", "commit.txt");
+  return join(dir, "..", "..", "config", "prompts", "commit.txt");
 })();
 
 const promptCache = new Map<string, string>();
