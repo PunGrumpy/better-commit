@@ -17,7 +17,7 @@ import {
   collectFormFields,
   formFieldsToMessage,
 } from "../prompts/form-fields.js";
-import { confirmMessage } from "../prompts/interactive.js";
+import { confirmMessage, selectUseAI } from "../prompts/interactive.js";
 
 export interface FixOptions {
   cwd?: string;
@@ -74,7 +74,7 @@ export const runFix = async (options: FixOptions): Promise<void> => {
   }
 
   const { effectiveProvider, preferredAgent, providerName, useAi } =
-    await resolveProvider(config, options);
+    await resolveProvider(config, options, selectUseAI);
 
   if (useAi && effectiveProvider) {
     const truncated = truncateDiff(lastCommitDiff || lastMessage);

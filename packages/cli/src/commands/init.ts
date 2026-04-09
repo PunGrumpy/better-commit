@@ -3,7 +3,7 @@ import { basename, join } from "node:path";
 
 import * as p from "@clack/prompts";
 
-import { exitSuccess } from "../core/exit.js";
+import { exitFailure, exitSuccess } from "../core/exit.js";
 
 const COMMIT_CONFIG_FILENAME = "commit.config.ts";
 
@@ -36,6 +36,7 @@ export default defineConfig({
 
 export interface InitOptions {
   cwd?: string;
+  force?: boolean;
   quiet?: boolean;
 }
 
@@ -44,6 +45,12 @@ export const runInit = async (options: InitOptions): Promise<void> => {
   const configPath = join(cwd, COMMIT_CONFIG_FILENAME);
 
   const existing = existsSync(configPath);
+  if (existing && options.quiet && !options.force) {
+    console.error(
+      `${COMMIT_CONFIG_FILENAME} already exists. Use --force with --quiet to overwrite, or run without --quiet to confirm.`
+    );
+    exitFailure();
+  }
   if (existing && !options.quiet) {
     const overwrite = await p.confirm({
       initialValue: false,

@@ -20,23 +20,32 @@ bun add -g better-commit
 
 ## Usage
 
+The package installs **`bc`** and **`better-commit`** (same CLI). Examples use `bc`.
+
 ```bash
 bc              # Interactive commit (default)
 bc commit       # Same as above
 bc init         # Create commit.config.ts
 bc doctor       # Verify setup (Node, config load, plugins, providers)
 bc check        # Validate last commit message against your rules
+bc fix          # Amend last commit message (interactive / AI)
+bc retry        # Commit again using cached form data from the last run
 ```
 
 ### Options
 
-| Option            | Commands    | Description                     |
-| ----------------- | ----------- | ------------------------------- |
-| `--no-ai`         | commit, fix | Skip AI (manual / local only)   |
-| `--dry-run`       | commit      | Show message without committing |
-| `-q, --quiet`     | init        | Skip overwrite prompt           |
-| `-e, --edit`      | check       | Validate `COMMIT_EDITMSG`       |
-| `--from` / `--to` | check       | Validate commit range           |
+| Option            | Commands    | Description                                                   |
+| ----------------- | ----------- | ------------------------------------------------------------- |
+| `--no-ai`         | commit, fix | Skip AI (manual / local only)                                 |
+| `--dry-run`       | commit      | Show message without committing                               |
+| `-q, --quiet`     | init        | Non-interactive; with an existing file, use `-f` to overwrite |
+| `-f, --force`     | init        | Overwrite `commit.config.ts` (use with `-q` when replacing)   |
+| `-e, --edit`      | check       | Validate `COMMIT_EDITMSG`                                     |
+| `--from` / `--to` | check       | Validate each commit in the range (pass **both** refs)        |
+
+`bc check` modes are mutually exclusive: **last commit** (default), **`--edit`**, or **`--from` + `--to`**.
+
+Set **`BETTER_COMMIT_NO_AI=1`** to disable AI for `commit` and `fix` (same as `--no-ai`).
 
 ## Configuration
 

@@ -53,6 +53,21 @@ export const runCheck = async (options: CheckOptions): Promise<void> => {
     exitFailure();
   }
 
+  const hasFrom = options.from !== undefined;
+  const hasTo = options.to !== undefined;
+  if (hasFrom !== hasTo) {
+    p.log.error(
+      "Pass both --from and --to together to validate a commit range."
+    );
+    exitFailure();
+  }
+  if (options.edit && (hasFrom || hasTo)) {
+    p.log.error(
+      "Use only one mode: --edit, or --from/--to together, or default (last commit)."
+    );
+    exitFailure();
+  }
+
   let config;
   try {
     ({ config } = loadResolvedConfig(cwd));
@@ -72,9 +87,7 @@ export const runCheck = async (options: CheckOptions): Promise<void> => {
     }
     const result = validateCommitMessage(message, config);
     reportValidationResult(result, "Invalid commit message");
-  }
-
-  if (options.from !== undefined && options.to !== undefined) {
+  } else if (hasFrom && hasTo) {
     const commits = await getCommitsInRange(options.from, options.to, cwd);
     let hasFailure = false;
     for (const { hash, message } of commits) {

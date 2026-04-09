@@ -4,6 +4,7 @@ import { dirname, join, resolve } from "node:path";
 import { createJiti } from "jiti";
 
 import { ConfigLoadError } from "./config-load-error.js";
+import { DuplicatePluginError } from "./duplicate-plugin-error.js";
 import { mergeUserConfig } from "./resolve.js";
 import type { ResolvedCommitConfig, UserConfig } from "./types.js";
 
@@ -92,6 +93,12 @@ export const loadResolvedConfigFromPath = (
   } catch (error) {
     if (error instanceof ConfigLoadError) {
       throw error;
+    }
+    if (error instanceof DuplicatePluginError) {
+      throw new ConfigLoadError("duplicate_plugin", error.message, {
+        cause: error,
+        pathTried: configPath,
+      });
     }
     throw new ConfigLoadError(
       "merge_failed",

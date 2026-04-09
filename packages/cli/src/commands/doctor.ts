@@ -138,5 +138,5 @@ export const runDoctor = async (cwd: string = process.cwd()): Promise<void> => {
   }
 
   p.outro(`${failed.length} check(s) failed`);
-  exitFailure();
+  exitFailure(`Doctor failed: ${failed.map((check) => check.name).join(", ")}`);
 };

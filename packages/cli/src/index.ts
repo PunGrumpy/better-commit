@@ -17,15 +17,31 @@ const noAi = (opts: { ai?: boolean }): boolean =>
 program
   .name("better-commit")
   .version(packageJson.version, "-v, --version", "display the version number")
-  .description(packageJson.description);
+  .description(packageJson.description)
+  .addHelpText(
+    "after",
+    `
+Global:
+  The npm package installs two commands: bc and better-commit (same CLI).
+  BETTER_COMMIT_NO_AI=1 disables AI for commit and fix (same effect as --no-ai).
+`
+  );
 
 program
   .command("init")
   .description("Initialize better-commit in the current directory")
-  .option("-q, --quiet", "Skip prompts")
+  .option("-q, --quiet", "Non-interactive; use with --force to overwrite")
+  .option(
+    "-f, --force",
+    "Overwrite existing commit.config.ts (required with --quiet when file exists)"
+  )
   .action(async function initAction(this: Command) {
     const opts = this.opts();
-    await runInit({ cwd: process.cwd(), quiet: opts.quiet as boolean });
+    await runInit({
+      cwd: process.cwd(),
+      force: opts.force as boolean,
+      quiet: opts.quiet as boolean,
+    });
   });
 
 program
@@ -37,10 +53,12 @@ program
 
 program
   .command("check")
-  .description("Validate commit messages against conventional format")
+  .description(
+    "Validate commit messages: last commit (default), COMMIT_EDITMSG (--edit), or a range (--from and --to together)"
+  )
   .option("-e, --edit", "Validate COMMIT_EDITMSG")
-  .option("--from <ref>", "Start of range (with --to)")
-  .option("--to <ref>", "End of range (with --from)")
+  .option("--from <ref>", "Range start (requires --to)")
+  .option("--to <ref>", "Range end (requires --from)")
   .action(async function checkAction(this: Command) {
     const opts = this.opts();
     await runCheck({
@@ -81,4 +99,9 @@ program
     });
   });
 
-program.parse();
+try {
+  await program.parseAsync(process.argv);
+} catch (error: unknown) {
+  console.error(error);
+  process.exit(1);
+}

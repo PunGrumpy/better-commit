@@ -126,7 +126,7 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
 
   if (options.dryRun) {
     p.outro(`[dry-run] Would commit: ${message}`);
-    return;
+    exitSuccess();
   }
 
   try {
