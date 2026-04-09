@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 
+import { mergeUserConfig as merge } from "../src/config/resolve.js";
 import { aiSuggest } from "../src/plugins/ai-suggest.js";
 import { conventionalCommits } from "../src/plugins/conventional-commits.js";
-import { mergeUserConfig } from "../src/config/resolve.js";
 
 describe("mergeUserConfig", () => {
   test("merges conventionalCommits and aiSuggest", () => {
-    const resolved = mergeUserConfig({
+    const resolved = merge({
       plugins: [
         conventionalCommits({
           types: ["feat", "fix"],
@@ -14,8 +14,11 @@ describe("mergeUserConfig", () => {
         aiSuggest({ provider: "local" }),
       ],
     });
-    expect(resolved.rules.types).toEqual(["feat", "fix"]);
+    expect(resolved.rules.types).toStrictEqual(["feat", "fix"]);
     expect(resolved.ai?.provider).toBe("local");
-    expect(resolved.pluginIds).toEqual(["conventional-commits", "ai-suggest"]);
+    expect(resolved.pluginIds).toStrictEqual([
+      "conventional-commits",
+      "ai-suggest",
+    ]);
   });
 });
