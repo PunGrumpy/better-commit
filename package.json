@@ -35,16 +35,19 @@
     "lint": "ultracite check",
     "format": "ultracite fix",
     "check-types": "turbo run check-types",
-    "test": "turbo run test",
+    "test": "turbo test",
+    "test:coverage": "turbo test:coverage",
     "changeset": "changeset",
     "changeset:version": "changeset version",
     "changeset:publish": "turbo run build && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.30.0",
+    "oxfmt": "^0.44.0",
+    "oxlint": "^1.59.0",
     "turbo": "^2.9.5",
     "typescript": "catalog:",
-    "ultracite": "catalog:"
+    "ultracite": "7.4.4"
   },
   "engines": {
     "node": ">=18"
