@@ -45,13 +45,13 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.32.1",
-    "@clack/prompts": "^1.1.0",
-    "commander": "^12.1.0",
-    "dotenv": "^16.4.5",
+    "@anthropic-ai/sdk": "^0.86.1",
+    "@clack/prompts": "^1.2.0",
+    "commander": "^14.0.3",
+    "dotenv": "^17.4.1",
     "execa": "^9.5.2",
     "jiti": "^2.6.1",
-    "openai": "^4.73.0",
+    "openai": "^6.34.0",
     "zod": "catalog:"
   },
   "devDependencies": {
