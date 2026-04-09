@@ -4,7 +4,14 @@ import { baseOptions } from "@/lib/layout.shared";
 import { source } from "@/lib/source";
 
 const DocsLayout = ({ children }: LayoutProps<"/docs">) => (
-  <FumadocsDocsLayout tree={source.getPageTree()} {...baseOptions()}>
+  <FumadocsDocsLayout
+    tree={source.getPageTree()}
+    {...baseOptions()}
+    sidebar={{
+      collapsible: false,
+      tabs: false,
+    }}
+  >
     {children}
   </FumadocsDocsLayout>
 );
