@@ -1,13 +1,21 @@
 # better-commit
 
-AI-powered commit message tool similar to Commitizen. Generate conventional commits with AI suggestions from OpenAI, Anthropic, or local heuristics.
+TypeScript-first conventional commits with a single **`commit.config.ts`**, composable plugins, and optional AI suggestions. Configure with `defineConfig` and plugins.
 
 ## Install
 
+Project-local (recommended):
+
+```bash
+bun add -D better-commit
+# or
+npm install -D better-commit
+```
+
+Global:
+
 ```bash
 bun add -g better-commit
-# or
-npm install -g better-commit
 ```
 
 ## Usage
@@ -15,67 +23,86 @@ npm install -g better-commit
 ```bash
 bc              # Interactive commit (default)
 bc commit       # Same as above
-bc init         # Create .better-commit.json
-bc doctor       # Verify setup
+bc init         # Create commit.config.ts
+bc doctor       # Verify setup (Node, config load, plugins, providers)
+bc check        # Validate last commit message against your rules
 ```
 
-## Options
+### Options
 
-| Option      | Description                        |
-| ----------- | ---------------------------------- |
-| `--no-ai`   | Skip AI, use manual/heuristic only |
-| `--dry-run` | Show message without committing    |
+| Option            | Commands    | Description                     |
+| ----------------- | ----------- | ------------------------------- |
+| `--no-ai`         | commit, fix | Skip AI (manual / local only)   |
+| `--dry-run`       | commit      | Show message without committing |
+| `-q, --quiet`     | init        | Skip overwrite prompt           |
+| `-e, --edit`      | check       | Validate `COMMIT_EDITMSG`       |
+| `--from` / `--to` | check       | Validate commit range           |
 
 ## Configuration
 
-Run `bc init` to create `.better-commit.json`:
+Create **`commit.config.ts`** in the project root (run `bc init` for a template). Discovery walks up from the current directory and loads the first of: `commit.config.ts`, `commit.config.mts`, `commit.config.js`.
 
-```json
-{
-  "provider": "local",
-  "conventionalTypes": [
-    "feat",
-    "fix",
-    "docs",
-    "style",
-    "refactor",
-    "test",
-    "chore"
+```typescript
+import {
+  aiSuggest,
+  conventionalCommits,
+  defineConfig,
+} from "better-commit/config";
+
+export default defineConfig({
+  plugins: [
+    conventionalCommits({
+      types: ["feat", "fix", "docs", "style", "refactor", "test", "chore"],
+      // scopes: ["api", "web"],      // optional allowlist
+      // strictScopes: true,          // enforce scope list on `bc check`
+    }),
+    aiSuggest({ provider: "auto" }), // optional; omit for offline-only
   ],
-  "allowUnsanitized": false
-}
+});
 ```
 
-### Providers
+- **`conventionalCommits`** — required. Supplies allowed **types** and optional **scopes**.
+- **`aiSuggest`** — optional. Enables AI providers; without it, commits are manual / heuristic only.
 
-| Provider    | Env var             | Description                        |
-| ----------- | ------------------- | ---------------------------------- |
-| `local`     | —                   | Heuristic from file paths (no API) |
-| `openai`    | `OPENAI_API_KEY`    | OpenAI GPT                         |
-| `anthropic` | `ANTHROPIC_API_KEY` | Anthropic Claude                   |
+Set `BETTER_COMMIT_NO_AI=1` to disable AI even when `aiSuggest` is present.
+
+### Public API (`better-commit/config`)
+
+Exporting `defineConfig`, `conventionalCommits`, and `aiSuggest` from **`better-commit/config`** keeps the CLI entry small and gives you types for your config file.
+
+## AI providers
+
+With **`aiSuggest`**, provider hints match the CLI resolution order (see `bc doctor`):
+
+| Provider     | Notes                                       |
+| ------------ | ------------------------------------------- |
+| `auto`       | Detect Cursor, Claude Code, Codex; else ask |
+| `local`      | Heuristic from paths (no API)               |
+| `openai`     | Needs `OPENAI_API_KEY`                      |
+| `anthropic`  | Needs `ANTHROPIC_API_KEY`                   |
+| `cursor`     | Cursor ACP                                  |
+| `claude-cli` | Claude CLI                                  |
+| `codex-exec` | Codex exec                                  |
 
 ## Git hooks
 
-Use with husky for automatic better-commit on `git commit`:
+Example Husky **`prepare-commit-msg`**:
 
 ```bash
-bc init
-# Add to .husky/prepare-commit-msg: exec bc commit
+exec bc commit
 ```
 
-## Diff rendering
+For CI, use the same rules as locally:
 
-Diffs are used as **data** (AI input), not displayed to users. For future use cases:
-
-| Context | Library | Notes |
-|---------|---------|-------|
-| CLI (terminal) | [delta](https://github.com/dandavison/delta) / diff-so-fancy | ANSI-based; use if adding diff display to CLI |
-| Web UI | [@pierre/diffs](https://diffs.com/) | Shiki-based; use for dashboards, webviews, code review UIs |
-
-The CLI does not render diffs; it sends sanitized plain text to AI providers.
+```bash
+bc check
+```
 
 ## Security
 
-- Diffs are sanitized before sending to AI (secrets, API keys redacted)
-- Set `BETTER_COMMIT_NO_AI=1` to disable AI entirely
-- `allowUnsanitized: false` (default) — never send raw diff if sanitization fails
+- Diffs are sanitized before sending to AI (common secret patterns redacted).
+- Prefer project-local installs so `commit.config.ts` and lockfile stay reproducible.
+
+## Package layout
+
+**better-auth–style layering:** **`config/`** (jiti load + merge + shared types/errors), **`core/`** (format, git, validate, cache, sanitize), **`plugins/`** (e.g. `conventionalCommits`, `aiSuggest`), **`ai/`** (message providers + registry), **`prompts/`**, **`commands/`**, **`integrations/`**, root **`public-config.ts`** (npm `better-commit/config`), **`index.ts`** (CLI). Static prompts live under repo **`config/prompts/`**. **`__tests__/`**; **tsdown** emits `dist/index.mjs` and `dist/public-config.mjs`.

@@ -1,12 +1,12 @@
 {
   "name": "better-commit",
   "version": "0.0.0",
-  "description": "AI-powered commit message tool similar to Commitizen",
+  "description": "TypeScript-first conventional commits: commit.config.ts, plugins, optional AI",
   "keywords": [
     "ai",
     "better-commit",
     "commit",
-    "commitizen"
+    "conventional-commits"
   ],
   "license": "MIT",
   "author": "Noppakorn Kaewsalabnil <hello@pungrumpy.com>",
@@ -20,11 +20,20 @@
   },
   "files": [
     "config",
-    "dist/index.js",
-    "dist/index.d.ts",
+    "dist",
     "README.md"
   ],
   "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./config": {
+      "types": "./dist/public-config.d.mts",
+      "import": "./dist/public-config.mjs"
+    }
+  },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
@@ -32,7 +41,8 @@
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "test": "bun test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
@@ -40,6 +50,7 @@
     "commander": "^12.1.0",
     "dotenv": "^16.4.5",
     "execa": "^9.5.2",
+    "jiti": "^2.6.1",
     "openai": "^4.73.0",
     "zod": "catalog:"
   },
