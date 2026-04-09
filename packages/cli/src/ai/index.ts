@@ -1,10 +1,13 @@
-import { createAnthropicProvider } from "./anthropic.js";
-import { autoProvider } from "./auto.js";
-import { claudeCliProvider } from "./claude-cli.js";
-import { codexExecProvider } from "./codex-exec.js";
-import { cursorAcpProvider } from "./cursor-acp.js";
-import { localProvider } from "./local.js";
-import { createOpenAIProvider } from "./openai.js";
+import {
+  createAnthropicProvider,
+  createOpenAIProvider,
+} from "./cloud-providers.js";
+import { autoProvider, localProvider } from "./local-auto.js";
+import {
+  claudeCliProvider,
+  codexExecProvider,
+  cursorAcpProvider,
+} from "./subprocess-agents.js";
 import { ProviderRegistry } from "./registry.js";
 
 ProviderRegistry.register(localProvider);
@@ -23,5 +26,6 @@ if (anthropic) {
   ProviderRegistry.register(anthropic);
 }
 
-export { ProviderRegistry } from "./registry.js";
+export { ProviderRegistry, resolveProvider } from "./registry.js";
+export type { ProviderResolution } from "./registry.js";
 export type { AIProvider, GenerateMessageContext } from "./types.js";

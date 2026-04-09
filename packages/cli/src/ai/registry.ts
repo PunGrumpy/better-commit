@@ -1,7 +1,22 @@
 import { getPreferredAgent } from "../agents.js";
-import type { BetterCommitConfig } from "../config.js";
-import { ProviderRegistry } from "./registry.js";
+import type { ResolvedCommitConfig } from "../config/types.js";
 import type { AIProvider } from "./types.js";
+
+const providers = new Map<string, AIProvider>();
+
+export const ProviderRegistry = {
+  findProvider(name: string): AIProvider | undefined {
+    return providers.get(name.toLowerCase());
+  },
+
+  getProviders(): AIProvider[] {
+    return [...providers.values()];
+  },
+
+  register(provider: AIProvider): void {
+    providers.set(provider.name.toLowerCase(), provider);
+  },
+};
 
 export interface ProviderResolution {
   effectiveProvider: AIProvider;
@@ -11,15 +26,31 @@ export interface ProviderResolution {
 }
 
 export const resolveProvider = async (
-  config: BetterCommitConfig,
+  resolved: ResolvedCommitConfig,
   options: { noAi?: boolean },
   selectUseAI?: () => Promise<boolean>
 ): Promise<ProviderResolution> => {
+  const local = ProviderRegistry.findProvider("local");
+  if (!local) {
+    throw new Error("No local provider available");
+  }
+
+  const aiDisabled = options.noAi || process.env.BETTER_COMMIT_NO_AI === "1";
+
+  if (aiDisabled || resolved.ai === undefined) {
+    return {
+      effectiveProvider: local,
+      preferredAgent: null,
+      providerName: "local",
+      useAi: false,
+    };
+  }
+
+  const config = resolved.ai;
   const preferredAgent =
     config.provider === "auto" ? getPreferredAgent() : null;
 
   const useAi =
-    !options.noAi &&
     config.provider !== "local" &&
     (config.provider !== "auto" ||
       !!preferredAgent ||
@@ -29,11 +60,7 @@ export const resolveProvider = async (
     config.provider === "auto" ? (preferredAgent ?? "local") : config.provider;
 
   const provider = ProviderRegistry.findProvider(config.provider);
-  const local = ProviderRegistry.findProvider("local");
   const effectiveProvider = provider ?? local;
-  if (!effectiveProvider) {
-    throw new Error("No AI provider available");
-  }
 
   return {
     effectiveProvider,
