@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { Command } from "commander";
 
 import packageJson from "../package.json" with { type: "json" };
