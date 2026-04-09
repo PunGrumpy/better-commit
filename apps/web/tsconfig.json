@@ -3,17 +3,8 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"],
-      "@repo/*": ["../../packages/*"],
-      "collections/*": ["./.source/*"]
-    },
-    "strictNullChecks": true
+      "@repo/*": ["../../packages/*"]
+    }
   },
-  "include": [
-    "next-env.d.ts",
-    "next.config.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"]
 }
