@@ -13,7 +13,7 @@ const mono = Geist_Mono({
 });
 
 export const fonts = cn(
-  "touch-manipulation font-sans uppercase antialiased",
+  "touch-manipulation font-sans antialiased",
   sans.variable,
   mono.variable
 );
