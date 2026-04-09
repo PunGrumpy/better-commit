@@ -5,5 +5,5 @@
     "./node_modules/ultracite/config/oxlint/react/.oxlintrc.json",
     "./node_modules/ultracite/config/oxlint/next/.oxlintrc.json"
   ],
-  "ignorePatterns": ["packages/design-system/components/ui"]
+  "ignorePatterns": ["packages/design-system/components/ui", "CHANGELOG.md"]
 }
