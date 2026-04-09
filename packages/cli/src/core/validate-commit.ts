@@ -1,18 +1,11 @@
 import { parseCommitMessage } from "./commit-format.js";
-import type { BetterCommitConfig } from "./config.js";
-
-export interface ValidationResult {
-  valid: boolean;
-  errors: string[];
-  warnings: string[];
-}
+import type { ResolvedCommitConfig, ValidationResult } from "../config/types.js";
 
 const DEFAULT_SUBJECT_MAX_LENGTH = 72;
 
-/** Validates a commit message against conventional format and config. */
 export const validateCommitMessage = (
   message: string,
-  config: BetterCommitConfig,
+  config: ResolvedCommitConfig,
   options?: { subjectMaxLength?: number }
 ): ValidationResult => {
   const errors: string[] = [];
@@ -35,12 +28,28 @@ export const validateCommitMessage = (
     return { errors, valid: false, warnings };
   }
 
-  const allowedTypes = config.conventionalTypes.map((t) => t.toLowerCase());
+  const allowedTypes = config.rules.types.map((t) => t.toLowerCase());
   const typeLower = parsed.type.toLowerCase();
   if (!allowedTypes.includes(typeLower)) {
     errors.push(
       `Type "${parsed.type}" not in allowed list: ${allowedTypes.join(", ")}`
     );
+  }
+
+  const { scopes } = config.rules;
+  if (
+    config.rules.strictScopes &&
+    scopes &&
+    scopes.length > 0 &&
+    parsed.scope.trim()
+  ) {
+    const allowedScopes = scopes.map((s) => s.toLowerCase());
+    const scopeLower = parsed.scope.trim().toLowerCase();
+    if (!allowedScopes.includes(scopeLower)) {
+      errors.push(
+        `Scope "${parsed.scope}" not in allowed list: ${scopes.join(", ")}`
+      );
+    }
   }
 
   if (parsed.subject.length > subjectMaxLength) {

@@ -25,17 +25,6 @@ export const getStagedDiff = async (
   return stdout;
 };
 
-export const getRecentCommits = async (
-  count = 10,
-  cwd: string = process.cwd()
-): Promise<string[]> => {
-  const { stdout } = await git(
-    ["log", `-n${count}`, "--pretty=format:%s"],
-    cwd
-  );
-  return stdout.split("\n").filter(Boolean);
-};
-
 export const stageAll = async (cwd: string = process.cwd()): Promise<void> => {
   await git(["add", "-A"], cwd);
 };
@@ -45,27 +34,6 @@ export const commit = async (
   cwd: string = process.cwd()
 ): Promise<void> => {
   await execa("git", ["commit", "-m", message], { cwd });
-};
-
-export interface CommitLogEntry {
-  date: string;
-  hash: string;
-  message: string;
-}
-
-export const getCommitLog = async (
-  count = 20,
-  cwd: string = process.cwd()
-): Promise<CommitLogEntry[]> => {
-  const { stdout } = await git(
-    ["log", `-n${count}`, "--pretty=format:%h|%s|%ad", "--date=short"],
-    cwd
-  );
-
-  return stdout.split("\n").map((line) => {
-    const [hash, message, date] = line.split("|");
-    return { date: date ?? "", hash: hash ?? "", message: message ?? "" };
-  });
 };
 
 export const getLastCommitMessage = async (
@@ -88,14 +56,6 @@ export const getCommitEditMessage = (cwd: string = process.cwd()): string => {
     return "";
   }
   return readFileSync(path, "utf8");
-};
-
-export const getCommitMessage = async (
-  ref: string,
-  cwd: string = process.cwd()
-): Promise<string> => {
-  const { stdout } = await git(["log", "-1", "--pretty=%B", ref], cwd);
-  return stdout;
 };
 
 export interface CommitInRange {

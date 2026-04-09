@@ -33,7 +33,6 @@ const COMBINED_SECRETS = new RegExp(
   "gi"
 );
 
-/** ~4K tokens */
 const MAX_DIFF_CHARS = 16_000;
 
 export const truncateDiff = (diff: string): string =>

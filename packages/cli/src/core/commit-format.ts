@@ -45,7 +45,7 @@ const parseBodyFooter = (rest: string): { body?: string; footer?: string } => {
   return { body: rest || undefined };
 };
 
-/** Parses "type(scope): subject" or "type: subject" into components. Handles ! for breaking change and body/footer. */
+/** Parses "type(scope): subject" or "type: subject" into components. */
 export const parseCommitMessage = (
   message: string
 ): ParsedCommitMessage | null => {

@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const CACHE_FILENAME = ".better-commit-cache.json";
+const CACHE_FILENAME = ".bc-cache.json";
 
 export interface CommitCache {
   type: string;
