@@ -7,15 +7,15 @@ TypeScript-first conventional commits with a single **`commit.config.ts`**, comp
 Project-local (recommended):
 
 ```bash
-bun add -D better-commit
+bun add -D @better-commit/cli
 # or
-npm install -D better-commit
+npm install -D @better-commit/cli
 ```
 
 Global:
 
 ```bash
-bun add -g better-commit
+bun add -g @better-commit/cli
 ```
 
 ## Usage
@@ -56,7 +56,7 @@ import {
   aiSuggest,
   conventionalCommits,
   defineConfig,
-} from "better-commit/config";
+} from "@better-commit/cli/config";
 
 export default defineConfig({
   plugins: [
@@ -75,9 +75,9 @@ export default defineConfig({
 
 Set `BETTER_COMMIT_NO_AI=1` to disable AI even when `aiSuggest` is present.
 
-### Public API (`better-commit/config`)
+### Public API (`@better-commit/cli/config`)
 
-Exporting `defineConfig`, `conventionalCommits`, and `aiSuggest` from **`better-commit/config`** keeps the CLI entry small and gives you types for your config file.
+Exporting `defineConfig`, `conventionalCommits`, and `aiSuggest` from **`@better-commit/cli/config`** keeps the CLI entry small and gives you types for your config file.
 
 ## AI providers
 
@@ -114,4 +114,4 @@ bc check
 
 ## Package layout
 
-**better-auth–style layering:** **`config/`** (jiti load + merge + shared types/errors), **`core/`** (format, git, validate, cache, sanitize), **`plugins/`** (e.g. `conventionalCommits`, `aiSuggest`), **`ai/`** (message providers + registry), **`prompts/`**, **`commands/`**, **`integrations/`**, root **`public-config.ts`** (npm `better-commit/config`), **`index.ts`** (CLI). Static prompts live under repo **`config/prompts/`**. **`__tests__/`**; **tsdown** emits `dist/index.mjs` and `dist/public-config.mjs`.
+**better-auth–style layering:** **`config/`** (jiti load + merge + shared types/errors), **`core/`** (format, git, validate, cache, sanitize), **`plugins/`** (e.g. `conventionalCommits`, `aiSuggest`), **`ai/`** (message providers + registry), **`prompts/`**, **`commands/`**, **`integrations/`**, root **`public-config.ts`** (npm `@better-commit/cli/config`), **`index.ts`** (CLI). Static prompts live under repo **`config/prompts/`**. **`__tests__/`**; **tsdown** emits `dist/index.mjs` and `dist/public-config.mjs`.

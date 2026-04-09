@@ -11,7 +11,7 @@ const TEMPLATE = `import {
   aiSuggest,
   conventionalCommits,
   defineConfig,
-} from "better-commit/config";
+} from "@better-commit/cli/config";
 
 export default defineConfig({
   plugins: [

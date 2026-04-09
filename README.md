@@ -9,15 +9,15 @@ bun install
 bun run build
 ```
 
-The repo root includes a sample [`commit.config.ts`](commit.config.ts) (imports the CLI package via a relative path for local development). Published users import from **`better-commit/config`**.
+The repo root may include a sample `commit.config.ts` (imports the CLI package via a relative path for local development). Published users import from **`@better-commit/cli/config`**.
 
 ## Packages
 
-| Path                                               | Description                                                   |
-| -------------------------------------------------- | ------------------------------------------------------------- |
-| [`packages/cli`](packages/cli)                     | `bc` / `better-commit` CLI and `better-commit/config` exports |
-| [`apps/web`](apps/web)                             | Web app (Turborepo)                                           |
-| [`packages/design-system`](packages/design-system) | Shared UI                                                     |
+| Path                                               | Description                                                        |
+| -------------------------------------------------- | ------------------------------------------------------------------ |
+| [`packages/cli`](packages/cli)                     | `bc` / `better-commit` CLI and `@better-commit/cli/config` exports |
+| [`apps/web`](apps/web)                             | Web app (Turborepo)                                                |
+| [`packages/design-system`](packages/design-system) | Shared UI                                                          |
 
 ## Docs
 

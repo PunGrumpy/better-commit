@@ -1,5 +1,5 @@
 {
-  "name": "better-commit",
+  "name": "@better-commit/cli",
   "version": "0.0.0",
   "description": "TypeScript-first conventional commits: commit.config.ts, plugins, optional AI",
   "keywords": [

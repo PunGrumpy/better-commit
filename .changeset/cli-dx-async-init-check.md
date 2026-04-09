@@ -1,5 +1,5 @@
 ---
-"better-commit": major
+"@better-commit/cli": major
 ---
 
 **CLI parsing, init safety, and check rules**

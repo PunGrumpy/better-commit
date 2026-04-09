@@ -336,7 +336,7 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
         fs: { readTextFile: false, writeTextFile: false },
         terminal: false,
       },
-      clientInfo: { name: "better-commit", version: "0.0.0" },
+      clientInfo: { name: "@better-commit/cli", version: "0.0.0" },
       protocolVersion: 1,
     });
     await send("authenticate", { methodId: "cursor_login" });

@@ -1,5 +1,5 @@
 {
-  "name": "better-commit",
+  "name": "@better-commit/monorepo",
   "private": true,
   "workspaces": {
     "packages": [

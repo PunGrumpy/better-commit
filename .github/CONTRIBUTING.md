@@ -26,7 +26,7 @@ CLI-focused work is usually done in `packages/cli`. See **[packages/cli/README.m
 
 ## Changesets
 
-We use [Changesets](https://github.com/changesets/changesets) for versioning and changelogs of the **`better-commit`** npm package. Release automation ignores `web` and `@repo/design-system`; only changes that should ship on npm need a changeset.
+We use [Changesets](https://github.com/changesets/changesets) for versioning and changelogs of the **`@better-commit/cli`** npm package. Release automation ignores `web` and `@repo/design-system`; only changes that should ship on npm need a changeset.
 
 1. Run `bun run changeset` at the repo root.
 2. Pick the bump: `patch` / `minor` / `major`.

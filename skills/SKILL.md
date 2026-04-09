@@ -1,6 +1,6 @@
 ---
 name: better-commit
-description: Use better-commit CLI for TypeScript-first conventional commits. Run `bc` or `bc commit` interactively. Configure via root `commit.config.ts` with `defineConfig` and plugins from `better-commit/config`.
+description: Use better-commit CLI for TypeScript-first conventional commits. Run `bc` or `bc commit` interactively. Configure via root `commit.config.ts` with `defineConfig` and plugins from `@better-commit/cli/config`.
 tags:
   - cli
   - commit
@@ -43,14 +43,14 @@ Interactive conventional commits with optional AI, driven by **`commit.config.ts
 
 ## Configuration
 
-Use **`commit.config.ts`** at the repo root (see `bc init`). Import helpers from **`better-commit/config`**:
+Use **`commit.config.ts`** at the repo root (see `bc init`). Import helpers from **`@better-commit/cli/config`**:
 
 ```typescript
 import {
   aiSuggest,
   conventionalCommits,
   defineConfig,
-} from "better-commit/config";
+} from "@better-commit/cli/config";
 
 export default defineConfig({
   plugins: [
@@ -77,4 +77,4 @@ exec bc commit
 ## Security
 
 - Diffs are sanitized before AI calls
-- Prefer local `better-commit` install for reproducible config loading
+- Prefer local `@better-commit/cli` install for reproducible config loading

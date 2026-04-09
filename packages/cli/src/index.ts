@@ -22,7 +22,7 @@ program
     "after",
     `
 Global:
-  The npm package installs two commands: bc and better-commit (same CLI).
+  The npm package (@better-commit/cli) installs two commands: bc and better-commit (same CLI).
   BETTER_COMMIT_NO_AI=1 disables AI for commit and fix (same effect as --no-ai).
 `
   );
