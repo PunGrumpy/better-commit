@@ -20,5 +20,7 @@
     "lib": "@repo/design-system/lib",
     "hooks": "@repo/design-system/hooks"
   },
-  "registries": {}
+  "registries": {
+    "@kibo-ui": "https://www.kibo-ui.com/r/{name}.json"
+  }
 }
