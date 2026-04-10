@@ -1,16 +1,15 @@
-import Link from "next/link";
+"use client";
 
-export default function HomePage() {
-  return (
-    <div className="flex flex-col justify-center text-center flex-1">
-      <h1 className="text-2xl font-bold mb-4">Hello World</h1>
-      <p>
-        You can open{" "}
-        <Link href="/docs" className="font-medium underline">
-          /docs
-        </Link>{" "}
-        and see the documentation.
-      </p>
-    </div>
-  );
-}
+import { Code } from "./components/code";
+import { Demo } from "./components/demo";
+import { Hero } from "./components/hero";
+
+const HomePage = () => (
+  <div className="relative min-h-screen flex flex-col gap-6 items-center justify-center px-4 w-full max-w-lg mx-auto">
+    <Hero />
+    <Code />
+    <Demo />
+  </div>
+);
+
+export default HomePage;

@@ -1,9 +1,10 @@
-import { HomeLayout as FumadocsHomeLayout } from "fumadocs-ui/layouts/home";
-
-import { baseOptions } from "@/lib/layout.shared";
+import { Header } from "@/components/header";
 
 const HomeLayout = ({ children }: LayoutProps<"/">) => (
-  <FumadocsHomeLayout {...baseOptions()}>{children}</FumadocsHomeLayout>
+  <div className="h-dvh grid grid-rows-[56px_1fr] overflow-hidden">
+    <Header />
+    {children}
+  </div>
 );
 
 export default HomeLayout;
