@@ -31,11 +31,11 @@ const parseBodyFooter = (rest: string): { body?: string; footer?: string } => {
   if (!rest) {
     return {};
   }
-  const breakingMatch = rest.match(/\n*BREAKING CHANGE:\s*(.+)$/s);
-  if (breakingMatch) {
-    const footer = `BREAKING CHANGE: ${breakingMatch[1].trim()}`;
+  const breakingMatch = rest.match(/\n*BREAKING CHANGE:\s*(?<breaking>.+)$/su);
+  if (breakingMatch?.groups) {
+    const footer = `BREAKING CHANGE: ${breakingMatch.groups.breaking.trim()}`;
     const beforeBreaking = rest
-      .replace(/\n*BREAKING CHANGE:\s*.+$/s, "")
+      .replace(/\n*BREAKING CHANGE:\s*.+$/su, "")
       .trim();
     return {
       body: beforeBreaking || undefined,
@@ -54,18 +54,25 @@ export const parseCommitMessage = (
   const headerLine = lines[0] ?? "";
   const rest = lines.slice(1).join("\n").trim();
 
-  const withScopeAndBreaking = /^(\w+)!?\(([^)]*)\):\s*(.+)$/s.exec(headerLine);
-  if (withScopeAndBreaking) {
-    const [, type, scopeRaw, subjectRaw] = withScopeAndBreaking;
+  const withScopeAndBreaking =
+    /^(?<type>\w+)!?\((?<scope>[^)]*)\):\s*(?<subject>.+)$/su.exec(headerLine);
+  if (withScopeAndBreaking?.groups) {
+    const {
+      type,
+      scope: scopeRaw,
+      subject: subjectRaw,
+    } = withScopeAndBreaking.groups;
     const breaking = headerLine.includes("!");
     const scope = scopeRaw.trim();
     const subject = subjectRaw.trim();
     const { body, footer } = parseBodyFooter(rest);
     return { body, breaking, footer, scope, subject, type };
   }
-  const noScopeWithBreaking = /^(\w+)!?:\s*(.+)$/s.exec(headerLine);
-  if (noScopeWithBreaking) {
-    const [, type, subjectRaw] = noScopeWithBreaking;
+  const noScopeWithBreaking = /^(?<type>\w+)!?:\s*(?<subject>.+)$/su.exec(
+    headerLine
+  );
+  if (noScopeWithBreaking?.groups) {
+    const { type, subject: subjectRaw } = noScopeWithBreaking.groups;
     const breaking = headerLine.includes("!");
     const subject = subjectRaw.trim();
     const { body, footer } = parseBodyFooter(rest);
