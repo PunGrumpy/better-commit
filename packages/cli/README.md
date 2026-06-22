@@ -67,11 +67,11 @@ Run `bc check` in pipelines; wire `exec bc commit` in Husky `prepare-commit-msg`
 
 ## Environment variables
 
-| Variable                            | Description                                              |
-| ----------------------------------- | -------------------------------------------------------- |
-| `BETTER_COMMIT_NO_AI=1`             | Disable AI even if `aiSuggest` is configured             |
-| `OPENAI_API_KEY`                    | Optional; required for OpenAI provider                   |
-| `ANTHROPIC_API_KEY`                 | Optional; required for Anthropic provider                |
+| Variable                              | Description                                                |
+| ------------------------------------- | ---------------------------------------------------------- |
+| `BETTER_COMMIT_NO_AI=1`               | Disable AI even if `aiSuggest` is configured               |
+| `OPENAI_API_KEY`                      | Optional; required for OpenAI provider                     |
+| `ANTHROPIC_API_KEY`                   | Optional; required for Anthropic provider                  |
 | `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` | Auto-approve Cursor ACP tool permissions (default: prompt) |
 
 ## Security
