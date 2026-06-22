@@ -3,6 +3,7 @@ import * as p from "@clack/prompts";
 import { resolveProvider } from "../ai/index.js";
 import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
 import { parseCommitMessage } from "../core/commit-format.js";
+import { ensureValidMessageOrExit } from "../core/ensure-valid-message.js";
 import { exitFailure, exitSuccess } from "../core/exit.js";
 import {
   commitAmend,
@@ -108,6 +109,8 @@ export const runFix = async (options: FixOptions): Promise<void> => {
     p.cancel("Fix cancelled");
     exitSuccess();
   }
+
+  ensureValidMessageOrExit(message, config);
 
   try {
     await commitAmend(message, cwd);
