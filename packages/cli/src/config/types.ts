@@ -49,6 +49,11 @@ export interface ResolvedCommitConfig {
     model?: string;
     provider: ProviderName;
   };
+  hooks?: {
+    validateMessage: Array<
+      (message: string) => ValidationResult | Promise<ValidationResult>
+    >;
+  };
   pluginIds: string[];
   rules: {
     scopes: string[] | undefined;
