@@ -145,9 +145,12 @@ const runClaudeProcess = async (
     }
     try {
       const json = JSON.parse(stdout) as { result?: string };
-      const text = json.result?.trim();
-      return text || "feat: update";
-    } catch {
+      const text = json.result?.trim() ?? "";
+      return assertNonEmptyAiOutput(text, "Claude CLI");
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("empty message")) {
+        throw error;
+      }
       throw new Error("Failed to parse Claude CLI output");
     }
   } finally {
@@ -348,12 +351,10 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
   });
 
   proc.on("error", (err) => {
-    clearTimeout(timeoutId);
     fail(err instanceof Error ? err : new Error(String(err)));
   });
 
   proc.on("exit", (code) => {
-    clearTimeout(timeoutId);
     if (code !== 0 && code !== null && collectedText === "") {
       fail(new Error(`agent acp exited with code ${code}`));
     }
@@ -402,10 +403,9 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
       prompt: [{ text: prompt, type: "text" }],
       sessionId,
     });
-    clearTimeout(timeoutId);
     proc.stdin?.end();
     await once(proc, "close");
-    return collectedText.trim() || "feat: update";
+    return assertNonEmptyAiOutput(collectedText, "Cursor ACP");
   })();
 
   try {
@@ -414,10 +414,10 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
       fatal.promise,
     ]);
   } catch (error) {
-    clearTimeout(timeoutId);
     proc.kill("SIGTERM");
     throw error instanceof Error ? error : new Error(String(error));
   } finally {
+    clearTimeout(timeoutId);
     rl.close();
   }
 };
