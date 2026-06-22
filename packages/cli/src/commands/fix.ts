@@ -56,7 +56,7 @@ export const runFix = async (options: FixOptions): Promise<void> => {
     exitFailure();
   }
 
-  const validation = validateCommitMessage(lastMessage, config);
+  const validation = await validateCommitMessage(lastMessage, config);
 
   let message: string;
 
@@ -110,7 +110,7 @@ export const runFix = async (options: FixOptions): Promise<void> => {
     exitSuccess();
   }
 
-  ensureValidMessageOrExit(message, config);
+  await ensureValidMessageOrExit(message, config);
 
   try {
     await commitAmend(message, cwd);

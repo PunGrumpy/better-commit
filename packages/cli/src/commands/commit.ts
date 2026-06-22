@@ -106,7 +106,7 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
   }
 
   const message = formFieldsToMessage(fields);
-  ensureValidMessageOrExit(message, config);
+  await ensureValidMessageOrExit(message, config);
 
   const confirmed = await confirmMessage(message);
   if (!confirmed) {
@@ -126,7 +126,7 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
     cwd
   );
 
-  ensureValidMessageOrExit(message, config);
+  await ensureValidMessageOrExit(message, config);
 
   if (options.dryRun) {
     p.outro(`[dry-run] Would commit: ${message}`);
