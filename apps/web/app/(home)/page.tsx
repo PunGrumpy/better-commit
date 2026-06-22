@@ -3,7 +3,28 @@
 import { Button } from "@repo/design-system/components/ui/button";
 import Link from "next/link";
 
+import { CodeBlock } from "@/components/code-block";
 import { Installer } from "@/components/installer";
+
+const code = `export default defineConfig({
+  plugins: [
+    conventionalCommits({
+      types: [
+        "feat",
+        "fix",
+        "docs",
+        "style",
+        "refactor",
+        "test",
+        "chore",
+        "perf",
+        "ci",
+        "build",
+      ],
+    }),
+    aiSuggest({ provider: "auto" }),
+  ],
+});`;
 
 const HomePage = () => (
   <div className="relative flex flex-col gap-6 items-center justify-center px-4 w-full max-w-lg mx-auto">
@@ -18,6 +39,9 @@ const HomePage = () => (
     </div>
     <div className="w-full text-balance text-muted-foreground text-sm">
       Configure <code>commit.config.ts</code> before your commits are served.
+    </div>
+    <div className="w-full">
+      <CodeBlock lang="typescript" code={code} />
     </div>
   </div>
 );
