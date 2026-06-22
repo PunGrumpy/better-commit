@@ -78,7 +78,10 @@ export const runFix = async (options: FixOptions): Promise<void> => {
     await resolveProvider(config, options, selectUseAI);
 
   if (useAi && effectiveProvider) {
-    const preparedDiff = prepareDiffForAi(lastCommitDiff || lastMessage, config);
+    const preparedDiff = prepareDiffForAi(
+      lastCommitDiff || lastMessage,
+      config
+    );
     const spinner = p.spinner();
     spinner.start(`Generating fix with ${providerName}...`);
     try {
