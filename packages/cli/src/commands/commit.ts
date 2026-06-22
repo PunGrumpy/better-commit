@@ -13,7 +13,7 @@ import {
   isGitRepo,
   stageAll,
 } from "../core/git.js";
-import { sanitizeDiff, truncateDiff } from "../core/sanitize.js";
+import { prepareDiffForAi } from "../core/prepare-diff-for-ai.js";
 import { getCommitPromptAsync } from "../prompts/commit-prompt.js";
 import {
   collectFormFields,
@@ -78,8 +78,7 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
     getCommitPromptAsync(),
   ]);
 
-  const truncated = truncateDiff(diff);
-  const sanitized = sanitizeDiff(truncated);
+  const preparedDiff = prepareDiffForAi(diff, config);
 
   const { effectiveProvider, preferredAgent, providerName, useAi } =
     await resolveProvider(config, options, selectUseAI);
@@ -89,8 +88,9 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
     const spinner = p.spinner();
     spinner.start(`Generating message with ${providerName}...`);
     try {
-      const rawMessage = await effectiveProvider.generateMessage(sanitized, {
+      const rawMessage = await effectiveProvider.generateMessage(preparedDiff, {
         customPrompt: config.ai?.customPrompt,
+        model: config.ai?.model,
         preferredAgent: preferredAgent ?? undefined,
       });
       spinner.stop("Generated");
