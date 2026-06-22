@@ -9,8 +9,19 @@ assignees: ""
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**Ultracite version**
-I am using version ...
+**Environment**
+
+- `@better-commit/cli` version: (run `bc --version` or check `package.json`)
+- Node.js version:
+- OS:
+
+**Configuration**
+
+Paste a redacted snippet of your `commit.config.ts` (remove API keys and secrets):
+
+```typescript
+// your config here
+```
 
 **To Reproduce**
 Steps to reproduce the behavior:
@@ -25,10 +36,6 @@ A clear and concise description of what you expected to happen.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
-
-**Desktop (please complete the following information):**
-
-- OS: [e.g. MacOS]
 
 **Additional context**
 Add any other context about the problem here.
