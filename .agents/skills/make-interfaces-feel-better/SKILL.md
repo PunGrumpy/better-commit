@@ -9,52 +9,61 @@ Great interfaces rarely come from a single thing. It's usually a collection of s
 
 ## Quick Reference
 
-| Category | When to Use |
-| --- | --- |
-| [Typography](typography.md) | Text wrapping, font smoothing, tabular numbers, Geist typography scales |
-| [Surfaces](surfaces.md) | Border radius, optical alignment, Geist shadows, image outlines, focus rings, component states |
-| [Animations](animations.md) | Timings, physical easing, interruptible animations, enter/exit transitions, icon animations, scale on press |
-| [Performance](performance.md) | Transition specificity, `will-change` usage |
-| [Vercel Eve Agents](eve.md) | Agent config (`defineAgent`), tools (`defineTool`), instructions, skills, schedules, durable execution |
+| Category                      | When to Use                                                                                                 |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| [Typography](typography.md)   | Text wrapping, font smoothing, tabular numbers, Geist typography scales                                     |
+| [Surfaces](surfaces.md)       | Border radius, optical alignment, Geist shadows, image outlines, focus rings, component states              |
+| [Animations](animations.md)   | Timings, physical easing, interruptible animations, enter/exit transitions, icon animations, scale on press |
+| [Performance](performance.md) | Transition specificity, `will-change` usage                                                                 |
+| [Vercel Eve Agents](eve.md)   | Agent config (`defineAgent`), tools (`defineTool`), instructions, skills, schedules, durable execution      |
 
 ## Core Principles
 
 ### 1. Snappy Motion Over Loops
+
 Use motion only when it clarifies a change, never for decoration. Most interactions should feel instant; a duration of **0ms** is often the snappiest and best choice. When animations are needed:
+
 - State changes: 150ms.
 - Popovers and menus: 200ms with `cubic-bezier(0.175, 0.885, 0.32, 1.1)`.
 - Modals and overlays: 300ms.
 
 ### 2. Concentric Border Radius
+
 Keep radii tight and calculate concentrically: `outerRadius = innerRadius + padding`. Geist shapes:
+
 - **6px (`rounded-sm`)**: Everyday surfaces, buttons, and inputs.
 - **12px (`rounded-md`)**: Menus, popovers, dropdowns, and modals.
 - **16px (`rounded-lg`)**: Fullscreen layers and large cards.
 
 ### 3. Shadows Over Borders
+
 Layer transparent `box-shadow` values for light mode depth:
+
 - Cards: `0 2px 2px rgba(0, 0, 0, 0.04)`
 - Popovers/Menus: `0 1px 1px rgba(0, 0, 0, 0.02), 0 4px 8px -4px rgba(0, 0, 0, 0.04), 0 16px 24px -8px rgba(0, 0, 0, 0.06)`
-For dark mode, simplify to a single white border ring: `0 0 0 1px rgba(255, 255, 255, 0.08)`.
+  For dark mode, simplify to a single white border ring: `0 0 0 1px rgba(255, 255, 255, 0.08)`.
 
 ### 4. Focus Rings and States
+
 Interactive elements must show focus visible rings. Geist uses a two-layer focus ring: a 2px gap in the surface color, then a 2px `blue-700` (`#006bff`) ring.
 
 ### 5. Content Casing
+
 Use **Title Case** for labels, buttons, titles, and tabs (e.g. `Deploy Project`, `Cancel Request`). Use **Sentence case** for body copy, descriptions, helper text, and toast notifications. Name actions with a verb + noun.
 
 ### 6. Durable Eve Agents
+
 Structure Vercel Eve agents inside the filesystem (`agent.ts`, `instructions.md`, `tools/`, `skills/`). Specify typed schemas using Zod for tools (`defineTool`), and keep tools stateless to ensure safety during durable session checkpoints.
 
 ## Common Mistakes
 
-| Mistake | Fix |
-| --- | --- |
-| Same border radius on parent and child | Calculate `outerRadius = innerRadius + padding` using Geist standard radii |
-| Snapping elements / slow animations | Default to 0ms transition or keep them snappy (<300ms) with `cubic-bezier(0.175, 0.885, 0.32, 1.1)` |
-| `transition: all` on elements | Specify exact properties (e.g. `transition-property: scale, opacity`) |
-| In-memory state inside Eve tools | Save persistent state in files or databases to maintain durable execution safety |
-| Missing Title Case on buttons | Capitalize buttons using Title Case with Verb + Noun format |
+| Mistake                                | Fix                                                                                                 |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Same border radius on parent and child | Calculate `outerRadius = innerRadius + padding` using Geist standard radii                          |
+| Snapping elements / slow animations    | Default to 0ms transition or keep them snappy (<300ms) with `cubic-bezier(0.175, 0.885, 0.32, 1.1)` |
+| `transition: all` on elements          | Specify exact properties (e.g. `transition-property: scale, opacity`)                               |
+| In-memory state inside Eve tools       | Save persistent state in files or databases to maintain durable execution safety                    |
+| Missing Title Case on buttons          | Capitalize buttons using Title Case with Verb + Noun format                                         |
 
 ## Review Output Format
 
@@ -63,13 +72,15 @@ Always present changes as a markdown table with **Before** and **After** columns
 ### Example
 
 #### Concentric border radius & shapes
-| Before | After |
-| --- | --- |
+
+| Before                                                      | After                                                                               |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `rounded-xl` on card + `rounded-xl` on inner button (`p-2`) | `rounded-md` on card (`12px`), `rounded-sm` on inner button (`6px` + `6px padding`) |
 
 #### Button & input actions (Title Case)
-| Before | After |
-| --- | --- |
+
+| Before                    | After                          |
+| ------------------------- | ------------------------------ |
 | `<button>submit</button>` | `<button>Submit Form</button>` |
 
 Rows should cite the specific file and the specific property that changed when it isn't obvious from the snippet. If a principle was reviewed but nothing needed to change, omit that table entirely — empty tables add noise.

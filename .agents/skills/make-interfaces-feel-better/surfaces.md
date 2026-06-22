@@ -15,12 +15,13 @@ This rule is most useful when nested surfaces are close together. If padding is 
 ### Geist Border Radius Specifications
 
 Geist enforces strict radius parameters to maintain a cohesive shape language:
+
 - **6px (`rounded-sm`)**: Everyday surfaces, buttons, inputs, and small controls.
 - **12px (`rounded-md`)**: Menus, popovers, dropdowns, and modals.
 - **16px (`rounded-lg`)**: Fullscreen surfaces or large landing page cards.
 - **9999px (`rounded-full`)**: Pills, badges, avatars, and circular controls.
 
-*Rule: Keep one radius family per view rather than mixing rounded and sharp corners.*
+_Rule: Keep one radius family per view rather than mixing rounded and sharp corners._
 
 ### Example
 
@@ -85,12 +86,15 @@ Play icons are triangular and their geometric center is not their visual center.
 Hierarchy comes from tonal surfaces and borders first, so shadows stay subtle. Apply these exact `box-shadow` values:
 
 ### Light Mode Shadows
+
 - **Raised cards**: `0 2px 2px rgba(0, 0, 0, 0.04)`
 - **Popovers, menus, and dropdowns**: `0 1px 1px rgba(0, 0, 0, 0.02), 0 4px 8px -4px rgba(0, 0, 0, 0.04), 0 16px 24px -8px rgba(0, 0, 0, 0.06)`
 - **Modals and dialogs**: `0 1px 1px rgba(0, 0, 0, 0.02), 0 8px 16px -4px rgba(0, 0, 0, 0.04), 0 24px 32px -8px rgba(0, 0, 0, 0.06)`
 
 ### Dark Mode Shadows
+
 Layered depth shadows are not visible on dark backgrounds. Simplify to a single white ring:
+
 - **Default border ring**: `0 0 0 1px rgba(255, 255, 255, 0.08)`
 - **Hover border ring**: `0 0 0 1px rgba(255, 255, 255, 0.13)`
 
@@ -99,17 +103,22 @@ Layered depth shadows are not visible on dark backgrounds. Simplify to a single 
 Every interactive element must show a visible focus ring at `:focus-visible`. Never remove an outline without a visible replacement.
 
 ### Geist Focus Ring Spec
+
 Geist uses a two-layer focus ring: a 2px gap in the surface color, then a 2px `blue-700` (`#006bff`) ring.
 
 ```css
 .interactive-element:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #006bff;
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px #006bff;
 }
 
 /* For dark mode, match the inner gap to the dark background color */
 .dark .interactive-element:focus-visible {
-  box-shadow: 0 0 0 2px #0a0a0a, 0 0 0 4px #006bff;
+  box-shadow:
+    0 0 0 2px #0a0a0a,
+    0 0 0 4px #006bff;
 }
 ```
 
@@ -122,6 +131,7 @@ Geist uses a 10-step gray scale where step encodes intent rather than just light
 - **Text & Icons**: `900` (secondary), `1000` (primary).
 
 ### Buttons & Inputs
+
 - **Primary Button**: Solid `gray-1000` (`#171717`) background, `background-100` (`#ffffff`) text, 6px radius, height 40px (padding: `0 10px`).
 - **Secondary Button**: `background-100` background, translucent `gray-alpha-400` border, 6px radius, height 40px.
 - **Tertiary Button**: Transparent background, `gray-1000` text, 6px radius, height 40px (tints with `gray-alpha-200` on hover).
@@ -132,6 +142,7 @@ Geist uses a 10-step gray scale where step encodes intent rather than just light
 Add a subtle `1px` outline with low opacity to images to prevent them from washing out on light/dark backgrounds.
 
 ### Color rules (non-negotiable)
+
 - **Light mode**: pure black — `rgba(0, 0, 0, 0.1)`.
 - **Dark mode**: pure white — `rgba(255, 255, 255, 0.1)`.
 - Never use near-black or near-white palette tints (e.g. slate, zinc, neutral). A tinted outline picks up the surface color underneath and reads as dirt on the image edge.
