@@ -1,10 +1,26 @@
-"use client";
-
 import { Button } from "@repo/design-system/components/ui/button";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CodeBlock } from "@/components/code-block";
 import { Installer } from "@/components/installer";
+
+const title = "Better Commit";
+const description = "Every commit, vetted before it reaches your repository";
+
+export const metadata: Metadata = {
+  description,
+  openGraph: {
+    description,
+    title,
+  },
+  title,
+  twitter: {
+    card: "summary_large_image",
+    description,
+    title,
+  },
+};
 
 const code = `export default defineConfig({
   plugins: [
