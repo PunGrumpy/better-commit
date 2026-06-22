@@ -49,32 +49,16 @@ html:not([data-anchor-scrolling]) {
   }
 }
 
-@utility bg-grid {
-  background-image:
-    linear-gradient(currentColor 1px, transparent 1px),
-    linear-gradient(90deg, currentColor 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-@utility bg-grid-small {
-  background-image:
-    linear-gradient(currentColor 1px, transparent 1px),
-    linear-gradient(90deg, currentColor 1px, transparent 1px);
-  background-size: 8px 8px;
-}
-
-@utility bg-dot {
-  background-image: radial-gradient(
-    circle at 50% 50%,
-    currentColor 1.6px,
-    transparent 1.6px
-  );
-  background-size: 16px 16px;
-}
-
-.prose code:not(pre code),
-.prose a {
+:not(pre) > code {
+  @apply px-1 rounded-sm bg-muted font-mono text-foreground;
   overflow-wrap: anywhere;
+  /* Geist Mono's contextual alternates collapse `--` against adjacent
+       text (and across DOM boundaries with Shiki). See code-block.tsx for
+       the matching reset on syntax-highlighted blocks. */
+  font-feature-settings:
+    "liga" 0,
+    "calt" 0;
+  font-variant-ligatures: none;
 }
 
 /* Respect prefers-reduced-motion for accessibility (WCAG 2.3.3) */
