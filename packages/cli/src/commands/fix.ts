@@ -11,7 +11,7 @@ import {
   getLastCommitMessage,
   isGitRepo,
 } from "../core/git.js";
-import { sanitizeDiff, truncateDiff } from "../core/sanitize.js";
+import { prepareDiffForAi } from "../core/prepare-diff-for-ai.js";
 import { validateCommitMessage } from "../core/validate-commit.js";
 import { getCommitPromptAsync } from "../prompts/commit-prompt.js";
 import {
@@ -78,14 +78,17 @@ export const runFix = async (options: FixOptions): Promise<void> => {
     await resolveProvider(config, options, selectUseAI);
 
   if (useAi && effectiveProvider) {
-    const truncated = truncateDiff(lastCommitDiff || lastMessage);
-    const sanitized = sanitizeDiff(truncated);
+    const preparedDiff = prepareDiffForAi(
+      lastCommitDiff || lastMessage,
+      config
+    );
     const spinner = p.spinner();
     spinner.start(`Generating fix with ${providerName}...`);
     try {
-      const rawMessage = await effectiveProvider.generateMessage(sanitized, {
+      const rawMessage = await effectiveProvider.generateMessage(preparedDiff, {
         customPrompt: config.ai?.customPrompt,
         existingMessage: lastMessage,
+        model: config.ai?.model,
         preferredAgent: preferredAgent ?? undefined,
       });
       spinner.stop("Generated");

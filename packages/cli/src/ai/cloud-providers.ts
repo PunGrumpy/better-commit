@@ -23,7 +23,7 @@ export const createOpenAIProvider = (): AIProvider | null => {
           { content: systemPrompt, role: "system" },
           { content: userPrompt, role: "user" },
         ],
-        model: "gpt-4o-mini",
+        model: context.model ?? "gpt-4o-mini",
       });
       const text = choices[0]?.message?.content?.trim() ?? "";
       return assertNonEmptyAiOutput(text, "OpenAI");
@@ -47,7 +47,7 @@ export const createAnthropicProvider = (): AIProvider | null => {
       const { content } = await client.messages.create({
         max_tokens: 100,
         messages: [{ content: userPrompt, role: "user" }],
-        model: "claude-3-5-haiku-20241022",
+        model: context.model ?? "claude-3-5-haiku-20241022",
         system: systemPrompt,
       });
       const text = content

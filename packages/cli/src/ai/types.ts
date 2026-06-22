@@ -1,6 +1,7 @@
 export interface GenerateMessageContext {
   customPrompt?: string;
   existingMessage?: string;
+  model?: string;
   preferredAgent?: string | null;
   scope?: string;
   type?: string;
