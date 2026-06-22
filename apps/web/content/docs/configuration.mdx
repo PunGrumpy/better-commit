@@ -1,0 +1,101 @@
+---
+title: Configuration
+description: commit.config.ts, defineConfig, and plugin reference
+---
+
+better-commit is configured through a single **`commit.config.ts`** file at your repository root (or discovered by walking up the directory tree).
+
+## Config discovery
+
+The CLI searches upward from the current working directory for:
+
+- `commit.config.ts`
+- `commit.config.mts`
+- `commit.config.js`
+
+Import helpers from **`@better-commit/cli/config`** for a typed, small surface area.
+
+## defineConfig
+
+Use `defineConfig` to export your plugin list:
+
+```typescript
+import {
+  aiSuggest,
+  conventionalCommits,
+  defineConfig,
+} from "@better-commit/cli/config";
+
+export default defineConfig({
+  plugins: [
+    conventionalCommits({ types: ["feat", "fix", "docs", "chore"] }),
+    aiSuggest({ provider: "auto" }),
+  ],
+});
+```
+
+Plugins are merged in order. **`conventionalCommits`** is required — the CLI will fail to load config without it.
+
+## Plugins
+
+| Plugin | ID | Purpose |
+| --- | --- | --- |
+| `conventionalCommits()` | `conventional-commits` | Types, scopes, and message format rules |
+| `aiSuggest()` | `ai-suggest` | AI message suggestions from staged diffs |
+| Custom plugins | your `id` | Validation hooks and custom rules |
+
+See [Plugins](/docs/plugins) for custom plugins and `validateMessage` hooks.
+
+### conventionalCommits
+
+Sets allowed commit types and optional scopes:
+
+```typescript
+conventionalCommits({
+  types: ["feat", "fix", "docs", "chore"],
+  scopes: ["web", "cli"],
+  strictScopes: true,
+});
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `types` | `string[]` | required | Allowed commit types (non-empty) |
+| `scopes` | `string[]` | undefined | Allowed scopes; omit for any scope |
+| `strictScopes` | `boolean` | `true` when `scopes` is set | Reject scopes not in the list |
+
+When `scopes` is provided and `strictScopes` is omitted, scopes are enforced against the list.
+
+### aiSuggest
+
+Enables AI message suggestions during `bc commit` and `bc fix`:
+
+```typescript
+aiSuggest({
+  provider: "auto",
+  model: "gpt-4o-mini",
+  customPrompt: "Use imperative mood. Keep subject under 72 characters.",
+  allowUnsanitized: false,
+});
+```
+
+| Option | Type | Default | Description |
+| --- | --- | --- | --- |
+| `provider` | Provider name | `"auto"` | AI backend (see [AI providers](/docs/ai-providers)) |
+| `model` | `string` | provider default | Model identifier for cloud providers |
+| `customPrompt` | `string` | undefined | Extra instructions appended to the prompt |
+| `allowUnsanitized` | `boolean` | `false` | Skip diff sanitization (local providers only) |
+
+Disable AI globally with `BETTER_COMMIT_NO_AI=1` or the `--no-ai` flag, even when `aiSuggest` is configured.
+
+## Validation hooks
+
+Plugins can register `hooks.validateMessage` to add custom validation. Hooks run after built-in conventional commit checks. See [Plugins](/docs/plugins) for examples.
+
+## Verify config
+
+```sh
+bc doctor
+```
+
+Doctor lists loaded plugins, resolved rules (types, scopes), and available AI providers.
