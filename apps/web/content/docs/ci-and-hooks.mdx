@@ -1,0 +1,101 @@
+---
+title: CI and hooks
+description: Enforce commit rules in GitHub Actions and Husky hooks
+---
+
+better-commit uses the same validation rules everywhere: interactive commits, Git hooks, and CI pipelines all load **`commit.config.ts`** and run the same checks as **`bc check`**.
+
+## GitHub Actions
+
+Validate commits in a pull request or on push to your default branch:
+
+```yaml
+name: Commit messages
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - name: Validate commit messages
+        run: npx bc check --from origin/main --to HEAD
+```
+
+`fetch-depth: 0` ensures Git can resolve `origin/main`. Adjust branch names and the `--from` ref to match your workflow.
+
+For a single commit on push, validate the latest message only:
+
+```sh
+npx bc check
+```
+
+## Husky prepare-commit-msg
+
+Install the interactive commit hook with **`bc init --hooks`**:
+
+```sh
+npm install -D husky @better-commit/cli
+npx husky init
+bc init --hooks
+```
+
+This writes **`.husky/prepare-commit-msg`**:
+
+```bash
+#!/usr/bin/env sh
+# better-commit: run interactive commit
+exec bc commit
+```
+
+When you run `git commit`, Husky invokes `bc commit`, which guides you through type, scope, and subject based on your config.
+
+Use `-q -f` with `bc init --hooks` in non-interactive setups to overwrite an existing hook.
+
+## commit-msg validation
+
+To validate the message **after** it is written but **before** the commit is finalized, add a **`commit-msg`** hook that runs:
+
+```sh
+bc check --edit
+```
+
+Example **`.husky/commit-msg`**:
+
+```bash
+#!/usr/bin/env sh
+bc check --edit
+```
+
+`--edit` validates the contents of **`COMMIT_EDITMSG`** — the same file Git passes to `commit-msg` hooks. This catches invalid messages from `git commit -m` or editors that bypass `prepare-commit-msg`.
+
+## Combining hooks
+
+A typical setup:
+
+| Hook | Purpose |
+| --- | --- |
+| `prepare-commit-msg` | Run `bc commit` for interactive message composition |
+| `commit-msg` | Run `bc check --edit` as a final gate |
+
+You can use either hook alone. Teams that prefer manual `git commit -m` often skip `prepare-commit-msg` and rely on `commit-msg` plus CI.
+
+## CI vs local hooks
+
+- **Hooks** give immediate feedback before a commit lands locally.
+- **CI** catches messages from contributors who skip hooks or force-push.
+
+Use both for the strongest enforcement. See [Commands](/docs/commands) for the full `bc check` reference including `--from` / `--to` ranges.
