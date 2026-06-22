@@ -8,19 +8,47 @@ describe("sanitizeDiff", () => {
     expect(sanitizeDiff(diff)).toBe("+const key = '[REDACTED-AWS]';");
   });
 
-  test("throws when redacting OpenAI-style token (combined-regex group index bug)", () => {
+  test("redacts OpenAI-style token", () => {
     const diff = "+const token = 'sk-abcdefghijklmnopqrst';";
-    expect(() => sanitizeDiff(diff)).toThrow();
+    expect(sanitizeDiff(diff)).toBe("+const token = '[REDACTED-OPENAI]';");
   });
 
-  test("throws when redacting GitHub personal access token (combined-regex group index bug)", () => {
-    const diff = "+export GH_TOKEN=ghp_1234567890abcdefghijklmnopqrstuvwx;";
-    expect(() => sanitizeDiff(diff)).toThrow();
+  test("redacts GitHub personal access token", () => {
+    const diff =
+      "+export GH_TOKEN=ghp_1234567890abcdefghijklmnopqrstuvwxyz;";
+    expect(sanitizeDiff(diff)).toBe(
+      "+export GH_TOKEN=[REDACTED-GITHUB];"
+    );
   });
 
-  test("redacts api_key assignment with mismatched replacement label", () => {
+  test("redacts api_key assignment", () => {
     const diff = "+config.api_key=foo";
-    expect(sanitizeDiff(diff)).toBe("+config.secret=[REDACTED]");
+    expect(sanitizeDiff(diff)).toBe("+config.api_key=[REDACTED]");
+  });
+
+  test("redacts Anthropic API key", () => {
+    const diff = "+ANTHROPIC_API_KEY=sk-ant-api03-abc123XYZ";
+    expect(sanitizeDiff(diff)).toBe("+ANTHROPIC_API_KEY=[REDACTED-ANTHROPIC]");
+  });
+
+  test("redacts Stripe live secret key", () => {
+    const diff = "+STRIPE_KEY=sk_live_abc123def456";
+    expect(sanitizeDiff(diff)).toBe("+STRIPE_KEY=[REDACTED-STRIPE]");
+  });
+
+  test("redacts npm registry auth token in .npmrc", () => {
+    const diff =
+      "+//registry.npmjs.org/:_authToken=npm_abcdefghijklmnopqrstuvwxyz";
+    expect(sanitizeDiff(diff)).toBe(
+      "+//registry.npmjs.org/:_authToken=[REDACTED]"
+    );
+  });
+
+  test("redacts PEM private key block", () => {
+    const diff = `+-----BEGIN RSA PRIVATE KEY-----
++MIIEpAIBAAKCAQEA1234
++-----END RSA PRIVATE KEY-----`;
+    expect(sanitizeDiff(diff)).toBe("+[REDACTED-PEM]");
   });
 });
 
