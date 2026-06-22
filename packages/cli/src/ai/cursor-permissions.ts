@@ -62,12 +62,16 @@ export const resolveCursorPermission = (
     if (allowOnce) {
       return Promise.resolve("allow-once");
     }
-    const firstAllow = options.find(
-      (option) => option.kind === "allow" || option.optionId.startsWith("allow")
+
+    const rejectOption = options.find(
+      (option) =>
+        option.kind === "reject" ||
+        option.optionId === "reject-once" ||
+        option.optionId === "reject" ||
+        option.optionId === "deny" ||
+        option.optionId === "deny-once"
     );
-    return Promise.resolve(
-      firstAllow?.optionId ?? options[0]?.optionId ?? "allow-once"
-    );
+    return Promise.resolve(rejectOption?.optionId ?? "reject-once");
   }
 
   return promptForCursorPermission(title, options);

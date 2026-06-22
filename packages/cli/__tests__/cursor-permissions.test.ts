@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import {
   isPermissionRejection,
   mapPermissionOptionsToSelect,
+  resolveCursorPermission,
 } from "../src/ai/cursor-permissions.js";
 import type { AcpPermissionOption } from "../src/ai/cursor-permissions.js";
 
@@ -33,5 +34,30 @@ describe("isPermissionRejection", () => {
 
   test("returns true for deny option ids without kind", () => {
     expect(isPermissionRejection("deny", [])).toBe(true);
+  });
+});
+
+describe("resolveCursorPermission auto-approve", () => {
+  const originalEnv = process.env.BETTER_COMMIT_CURSOR_AUTO_APPROVE;
+
+  test("selects allow-once when available", async () => {
+    process.env.BETTER_COMMIT_CURSOR_AUTO_APPROVE = "1";
+    const result = await resolveCursorPermission("Run command", [
+      { kind: "allow", name: "Allow once", optionId: "allow-once" },
+      { kind: "allow", name: "Allow always", optionId: "allow-always" },
+      { kind: "reject", name: "Reject", optionId: "reject-once" },
+    ]);
+    expect(result).toBe("allow-once");
+    process.env.BETTER_COMMIT_CURSOR_AUTO_APPROVE = originalEnv;
+  });
+
+  test("never selects allow-always when allow-once is absent", async () => {
+    process.env.BETTER_COMMIT_CURSOR_AUTO_APPROVE = "1";
+    const result = await resolveCursorPermission("Write file", [
+      { kind: "allow", name: "Allow always", optionId: "allow-always" },
+      { kind: "reject", name: "Reject", optionId: "reject-once" },
+    ]);
+    expect(result).toBe("reject-once");
+    process.env.BETTER_COMMIT_CURSOR_AUTO_APPROVE = originalEnv;
   });
 });

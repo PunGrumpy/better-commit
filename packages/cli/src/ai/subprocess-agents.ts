@@ -10,6 +10,7 @@ import {
   buildCommitPrompt,
   getShortPromptHint,
 } from "../prompts/commit-prompt.js";
+import { assertNonEmptyAiOutput } from "./assert-output.js";
 import {
   isPermissionRejection,
   resolveCursorPermission,
@@ -29,14 +30,6 @@ const promiseWithResolvers = <T>(): PromiseWithResolvers<T> =>
       withResolvers: <R>() => PromiseWithResolvers<R>;
     }
   ).withResolvers<T>();
-
-const assertNonEmptyAiOutput = (text: string, provider: string): string => {
-  const trimmed = text.trim();
-  if (!trimmed) {
-    throw new Error(`${provider} returned empty message`);
-  }
-  return trimmed;
-};
 
 const CODEX_TIMEOUT_MS = 30_000;
 
@@ -302,17 +295,30 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
   let collectedText = "";
   const permissionQueue: PendingPermissionRequest[] = [];
   let permissionSignal = promiseWithResolvers<null>();
+  let procClosed = false;
 
   const notifyPermissionWaiter = () => {
     permissionSignal.resolve(null);
     permissionSignal = promiseWithResolvers<null>();
   };
 
-  const waitForPermissionRequest = async (): Promise<void> => {
+  const markProcClosed = () => {
+    procClosed = true;
+    notifyPermissionWaiter();
+  };
+
+  const waitForPermissionRequest = async (): Promise<boolean> => {
     if (permissionQueue.length > 0) {
-      return;
+      return true;
+    }
+    if (procClosed) {
+      return false;
     }
     await permissionSignal.promise;
+    if (permissionQueue.length > 0) {
+      return true;
+    }
+    return !procClosed;
   };
 
   const send = (method: string, params?: object) => {
@@ -397,6 +403,10 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
     }
   });
 
+  proc.on("close", () => {
+    markProcClosed();
+  });
+
   const respondToPermissionRequest = async (
     request: PendingPermissionRequest
   ): Promise<boolean> => {
@@ -418,12 +428,16 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
 
   const handlePermissions = async (): Promise<void> => {
     const processNext = async (): Promise<void> => {
-      if (permissionQueue.length === 0) {
-        await waitForPermissionRequest();
+      const hasWork = await waitForPermissionRequest();
+      if (!hasWork) {
+        return;
       }
 
       const request = permissionQueue.shift();
       if (!request) {
+        if (procClosed) {
+          return;
+        }
         return processNext();
       }
 
