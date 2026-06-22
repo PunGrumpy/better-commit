@@ -50,7 +50,7 @@ html:not([data-anchor-scrolling]) {
 }
 
 :not(pre) > code {
-  @apply px-1 rounded-sm bg-muted font-mono text-foreground;
+  @apply p-[3px] rounded-[5px] border bg-muted font-mono text-foreground;
   overflow-wrap: anywhere;
   /* Geist Mono's contextual alternates collapse `--` against adjacent
        text (and across DOM boundaries with Shiki). See code-block.tsx for
