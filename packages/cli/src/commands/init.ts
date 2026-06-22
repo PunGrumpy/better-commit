@@ -42,35 +42,7 @@ export interface InitOptions {
   hooks?: boolean;
 }
 
-export const runInit = async (options: InitOptions): Promise<void> => {
-  const cwd = options.cwd ?? process.cwd();
-  const configPath = path.join(cwd, COMMIT_CONFIG_FILENAME);
-
-  const existing = existsSync(configPath);
-  if (existing && options.quiet && !options.force) {
-    console.error(
-      `${COMMIT_CONFIG_FILENAME} already exists. Use --force with --quiet to overwrite, or run without --quiet to confirm.`
-    );
-    exitFailure();
-  }
-  if (existing && !options.quiet) {
-    const overwrite = await p.confirm({
-      initialValue: false,
-      message: `${COMMIT_CONFIG_FILENAME} exists. Overwrite?`,
-    });
-    if (p.isCancel(overwrite)) {
-      exitSuccess();
-    }
-    if (!overwrite) {
-      return;
-    }
-  }
-
-  writeFileSync(configPath, TEMPLATE, "utf-8");
-  if (!options.quiet) {
-    p.outro(`Created ${path.basename(configPath)}`);
-  }
-
+const setupHooks = async (cwd: string, options: InitOptions): Promise<void> => {
   let shouldInstallHooks = options.hooks ?? false;
   if (!options.quiet && !shouldInstallHooks) {
     const confirmHooks = await p.confirm({
@@ -110,4 +82,36 @@ export const runInit = async (options: InitOptions): Promise<void> => {
     installHuskyHook(cwd);
     console.log("Installed .husky/prepare-commit-msg");
   }
+};
+
+export const runInit = async (options: InitOptions): Promise<void> => {
+  const cwd = options.cwd ?? process.cwd();
+  const configPath = path.join(cwd, COMMIT_CONFIG_FILENAME);
+
+  const existing = existsSync(configPath);
+  if (existing && options.quiet && !options.force) {
+    console.error(
+      `${COMMIT_CONFIG_FILENAME} already exists. Use --force with --quiet to overwrite, or run without --quiet to confirm.`
+    );
+    exitFailure();
+  }
+  if (existing && !options.quiet) {
+    const overwrite = await p.confirm({
+      initialValue: false,
+      message: `${COMMIT_CONFIG_FILENAME} exists. Overwrite?`,
+    });
+    if (p.isCancel(overwrite)) {
+      exitSuccess();
+    }
+    if (!overwrite) {
+      return;
+    }
+  }
+
+  writeFileSync(configPath, TEMPLATE, "utf-8");
+  if (!options.quiet) {
+    p.outro(`Created ${path.basename(configPath)}`);
+  }
+
+  await setupHooks(cwd, options);
 };

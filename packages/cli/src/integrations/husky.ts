@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+
 import { PREPARE_COMMIT_MSG_SCRIPT } from "./prepare-commit-msg.js";
 
 export const installHuskyHook = (cwd: string = process.cwd()): void => {
