@@ -65,6 +65,7 @@ Omit **`aiSuggest`** for offline-only / manual commits.
 ## Environment
 
 - `BETTER_COMMIT_NO_AI=1` — disable AI even if `aiSuggest` is configured
+- `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` — auto-approve Cursor ACP tool permissions (default: prompt user)
 
 ## Git hooks
 
