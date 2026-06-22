@@ -1,0 +1,132 @@
+---
+title: Commands
+description: bc CLI reference — commit, check, fix, retry, doctor, and init
+---
+
+The `bc` binary (alias `better-commit`) provides interactive commits and validation using your `commit.config.ts`.
+
+## Command overview
+
+| Command | Description |
+| --- | --- |
+| `bc` / `bc commit` | Interactive commit (default) |
+| `bc init` | Create `commit.config.ts` |
+| `bc doctor` | Verify config loads, list plugins, providers |
+| `bc check` | Validate last commit (or `--edit` / `--from`–`--to`) |
+| `bc fix` | Amend last commit message |
+| `bc retry` | Retry commit from cache |
+
+## bc commit
+
+Run the interactive commit flow. Prompts for type, scope, and subject based on config rules.
+
+```sh
+bc
+bc commit
+```
+
+With `aiSuggest` configured, the CLI can propose a message from your staged diff before you confirm.
+
+### Options
+
+| Option | Description |
+| --- | --- |
+| `--no-ai` | Skip AI suggestions |
+| `--dry-run` | Preview the message without committing |
+
+## bc init
+
+Create a starter `commit.config.ts` at the repository root.
+
+```sh
+bc init
+bc init -q          # non-interactive
+bc init -q -f       # overwrite existing config
+bc init --hooks     # also install Husky prepare-commit-msg hook
+```
+
+| Option | Description |
+| --- | --- |
+| `-q, --quiet` | Skip prompts |
+| `-f, --force` | Overwrite existing files (required with `-q`) |
+| `--hooks` | Install `.husky/prepare-commit-msg` |
+
+Requires Husky for hooks: `npm install -D husky && npx husky init`
+
+## bc doctor
+
+Verify your environment and configuration.
+
+```sh
+bc doctor
+```
+
+Checks Node version, config discovery, resolved plugins, and available AI providers.
+
+## bc check
+
+Validate commit messages using the same rules as the interactive flow.
+
+```sh
+bc check                    # validate last commit
+bc check --edit             # validate COMMIT_EDITMSG
+bc check --from v1.0.0 --to HEAD   # validate commit range
+```
+
+| Option | Description |
+| --- | --- |
+| `-e, --edit` | Validate the message in `COMMIT_EDITMSG` (commit-msg hook pattern) |
+| `--from <ref>` | Range start (requires `--to`) |
+| `--to <ref>` | Range end (requires `--from`) |
+
+Use only one mode: default (last commit), `--edit`, or `--from`/`--to` together.
+
+### Examples
+
+Validate the message being composed (useful in a `commit-msg` hook):
+
+```sh
+bc check --edit
+```
+
+Validate all commits since a tag:
+
+```sh
+bc check --from v1.0.0 --to HEAD
+```
+
+Validate commits between two refs:
+
+```sh
+bc check --from abc1234 --to def5678
+```
+
+## bc fix
+
+Amend the last commit message interactively.
+
+```sh
+bc fix
+bc fix --no-ai    # skip AI when suggesting a new message
+```
+
+## bc retry
+
+Retry the last interactive commit from cache when a previous attempt was interrupted.
+
+```sh
+bc retry
+```
+
+## Global options
+
+| Option | Commands | Description |
+| --- | --- | --- |
+| `--no-ai` | commit, fix | Skip AI |
+| `--dry-run` | commit | Preview message only |
+| `-q, --quiet` | init | Skip prompts |
+| `--hooks` | init | Install Husky hooks |
+| `-e, --edit` | check | Validate `COMMIT_EDITMSG` |
+| `--from` / `--to` | check | Validate commit range |
+
+See [CI and hooks](/docs/ci-and-hooks) for pipeline and Git hook integration.
