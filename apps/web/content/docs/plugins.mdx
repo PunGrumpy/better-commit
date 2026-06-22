@@ -1,0 +1,96 @@
+---
+title: Plugins
+description: Built-in plugins and custom validateMessage hooks
+---
+
+Plugins extend **`commit.config.ts`** with commit rules, AI suggestions, and custom validation. Register them in order inside `defineConfig({ plugins: [...] })`.
+
+## Built-in plugins
+
+### conventionalCommits
+
+**Required.** Defines allowed commit types and optional scopes.
+
+```typescript
+conventionalCommits({
+  types: ["feat", "fix", "docs", "chore"],
+  scopes: ["web", "cli"],
+  strictScopes: true,
+});
+```
+
+| Option | Description |
+| --- | --- |
+| `types` | Non-empty list of allowed commit types |
+| `scopes` | Allowed scopes; omit to allow any scope |
+| `strictScopes` | Reject scopes not in the list (defaults to `true` when `scopes` is set) |
+
+Plugin ID: **`conventional-commits`**
+
+### aiSuggest
+
+Enables AI message suggestions during `bc commit` and `bc fix`.
+
+```typescript
+aiSuggest({
+  provider: "auto",
+  model: "gpt-4o-mini",
+  customPrompt: "Use imperative mood.",
+  allowUnsanitized: false,
+});
+```
+
+Plugin ID: **`ai-suggest`**
+
+See [AI providers](/docs/ai-providers) for provider options and [Configuration](/docs/configuration) for the full option table.
+
+## Custom plugins
+
+Add plugins with a unique `id` and optional `hooks`. Each plugin must set `apiVersion: 1`.
+
+### validateMessage hooks
+
+Plugins can register **`hooks.validateMessage`** to run custom checks after built-in conventional commit validation. Hooks run in plugin registration order.
+
+Example — reject WIP in commit subjects:
+
+```typescript
+import { conventionalCommits, defineConfig } from "@better-commit/cli/config";
+
+export default defineConfig({
+  plugins: [
+    conventionalCommits({ types: ["feat", "fix", "docs", "chore"] }),
+    {
+      id: "my-rules",
+      hooks: {
+        validateMessage: (msg) =>
+          msg.includes("WIP")
+            ? { valid: false, errors: ["Avoid WIP in commits"], warnings: [] }
+            : { valid: true, errors: [], warnings: [] },
+      },
+    },
+  ],
+});
+```
+
+Return shape:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `valid` | `boolean` | Whether the message passes this hook |
+| `errors` | `string[]` | Blocking issues |
+| `warnings` | `string[]` | Non-blocking notices |
+
+Hooks may be synchronous or async. Multiple hooks from different plugins run sequentially.
+
+### Rules and AI in one plugin
+
+A single plugin object can combine `rules`, `ai`, and `hooks`. Built-in helpers (`conventionalCommits`, `aiSuggest`) are the recommended way to set those fields — use custom plugins for validation logic that does not fit the built-ins.
+
+## Plugin requirements
+
+- **`conventionalCommits()`** must appear exactly once in the plugins array.
+- Plugin **`id`** values must be unique.
+- Import helpers from **`@better-commit/cli/config`**.
+
+Run **`bc doctor`** to confirm plugins load and rules resolve correctly.
