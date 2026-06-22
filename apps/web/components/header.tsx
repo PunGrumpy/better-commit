@@ -1,25 +1,45 @@
-import Link from "fumadocs-core/link";
+import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 
-import { docsRoute, gitConfig } from "@/lib/shared";
+import { Logo, nav } from "@/lib/shared";
 
 export const Header = () => (
-  <nav className="flex items-center justify-between px-4 sm:px-8 lg:px-12">
-    <span className="text-sm tracking-tight uppercase">Better Commit</span>
-    <div className="flex items-center gap-5">
-      <Link
-        href={docsRoute}
-        className="text-sm text-foreground/40 hover:text-foreground transition-colors"
-      >
-        Docs
-      </Link>
-      <Link
-        href={`https://github.com/${gitConfig.user}/${gitConfig.repo}`}
-        external
-        className="text-sm text-foreground/40 hover:text-foreground transition-colors"
-        prefetch={false}
-      >
-        GitHub
-      </Link>
+  <div className="mx-auto flex w-full  justify-between px-4 sm:px-8 lg:px-12">
+    <div className="flex select-none flex-row items-center">
+      <Logo />
     </div>
-  </nav>
+    <nav
+      data-slot="navigation-menu"
+      data-viewport="false"
+      className="group/navigation-menu relative z-10 flex max-w-max flex-1 items-center justify-center"
+    >
+      <div className="relative flex select-none flex-row items-center">
+        {nav.map((item) => {
+          const isExternal = item.href.startsWith("http");
+
+          return (
+            <ul
+              key={item.label}
+              className="group flex-1 list-none items-center justify-center h-14 gap-4 hidden pl-6 lg:flex"
+              data-slot="navigation-menu-list"
+            >
+              <li className="relative" data-slot="navigation-menu-item">
+                <Link
+                  data-slot="navigation-menu-link"
+                  href={item.href}
+                  prefetch={!isExternal}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className="w-full outline-none flex gap-1 items-center text-muted-foreground text-sm transition-colors duration-100 hover:text-foreground data-active:text-foreground"
+                >
+                  {item.label}
+                  {isExternal && <ArrowUpRight className="size-3" />}
+                </Link>
+              </li>
+            </ul>
+          );
+        })}
+      </div>
+    </nav>
+  </div>
 );

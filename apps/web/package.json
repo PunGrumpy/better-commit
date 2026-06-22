@@ -14,11 +14,12 @@
     "@repo/design-system": "workspace:*",
     "fumadocs-core": "16.10.5",
     "fumadocs-mdx": "15.0.12",
-    "fumadocs-ui": "16.10.5",
+    "fumadocs-ui": "npm:@fumadocs/base-ui@latest",
     "lucide-react": "catalog:",
     "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "shiki": "^4.2.0",
     "sonner": "catalog:",
     "zod": "catalog:"
   },

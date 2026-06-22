@@ -1,15 +1,22 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import {
+  Geist_Mono as createMono,
+  Geist as createSans,
+} from "next/font/google";
 
 import { cn } from "./utils";
 
-const sans = Geist({
+export const sans = createSans({
+  display: "swap",
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: "variable",
 });
 
-const mono = Geist_Mono({
+export const mono = createMono({
+  display: "swap",
   subsets: ["latin"],
   variable: "--font-mono",
+  weight: "variable",
 });
 
 export const fonts = cn(
