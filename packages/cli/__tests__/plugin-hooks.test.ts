@@ -15,7 +15,6 @@ describe("plugin validateMessage hooks", () => {
       plugins: [
         ...basePlugins,
         {
-          id: "forbidden-words",
           hooks: {
             validateMessage: (message) => ({
               errors: message.includes("SECRET")
@@ -25,11 +24,15 @@ describe("plugin validateMessage hooks", () => {
               warnings: [],
             }),
           },
+          id: "forbidden-words",
         },
       ],
     });
 
-    const result = await validateCommitMessage("feat: add SECRET feature", config);
+    const result = await validateCommitMessage(
+      "feat: add SECRET feature",
+      config
+    );
 
     expect(result.valid).toBe(false);
     expect(result.errors).toContain("Message must not contain SECRET");
@@ -40,7 +43,6 @@ describe("plugin validateMessage hooks", () => {
       plugins: [
         ...basePlugins,
         {
-          id: "custom-warn",
           hooks: {
             validateMessage: () => ({
               errors: [],
@@ -48,6 +50,7 @@ describe("plugin validateMessage hooks", () => {
               warnings: ["Custom hook warning"],
             }),
           },
+          id: "custom-warn",
         },
       ],
     });
@@ -65,22 +68,22 @@ describe("plugin validateMessage hooks", () => {
       plugins: [
         ...basePlugins,
         {
-          id: "hook-first",
           hooks: {
             validateMessage: () => {
               order.push("first");
               return { errors: [], valid: true, warnings: [] };
             },
           },
+          id: "hook-first",
         },
         {
-          id: "hook-second",
           hooks: {
             validateMessage: () => {
               order.push("second");
               return { errors: [], valid: true, warnings: [] };
             },
           },
+          id: "hook-second",
         },
       ],
     });

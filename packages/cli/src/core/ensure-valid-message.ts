@@ -4,7 +4,7 @@ import type { ResolvedCommitConfig } from "../config/types.js";
 import { exitFailure } from "./exit.js";
 import { validateCommitMessage } from "./validate-commit.js";
 
-export const validateMessageForCommit = async (
+export const validateMessageForCommit = (
   message: string,
   config: ResolvedCommitConfig
 ) => validateCommitMessage(message, config);

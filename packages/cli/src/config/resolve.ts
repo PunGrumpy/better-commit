@@ -107,5 +107,5 @@ export const mergeUserConfig = (config: UserConfig): ResolvedCommitConfig => {
       validateMessageHooks.length > 0
         ? { validateMessage: validateMessageHooks }
         : undefined,
-  };
+  } as ResolvedCommitConfig;
 };

@@ -10,7 +10,10 @@ const baseConfig: ResolvedCommitConfig = {
 
 describe("validateMessageForCommit", () => {
   test("returns valid result for valid message", async () => {
-    const result = await validateMessageForCommit("feat: add login", baseConfig);
+    const result = await validateMessageForCommit(
+      "feat: add login",
+      baseConfig
+    );
     expect(result.valid).toBe(true);
     expect(result.errors).toStrictEqual([]);
   });

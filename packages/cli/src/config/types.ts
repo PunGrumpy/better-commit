@@ -50,9 +50,9 @@ export interface ResolvedCommitConfig {
     provider: ProviderName;
   };
   hooks?: {
-    validateMessage: Array<
-      (message: string) => ValidationResult | Promise<ValidationResult>
-    >;
+    validateMessage: ((
+      message: string
+    ) => ValidationResult | Promise<ValidationResult>)[];
   };
   pluginIds: string[];
   rules: {

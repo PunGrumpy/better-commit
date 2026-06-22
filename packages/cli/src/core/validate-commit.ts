@@ -67,6 +67,7 @@ export const validateCommitMessage = async (
 
   const hooks = config.hooks?.validateMessage ?? [];
   for (const hook of hooks) {
+    // eslint-disable-next-line no-await-in-loop -- plugin hooks run sequentially in registration order
     const hookResult = await hook(trimmed);
     errors.push(...hookResult.errors);
     warnings.push(...hookResult.warnings);

@@ -49,7 +49,10 @@ describe("validateCommitMessage", () => {
 
   test("warns when subject exceeds 72 characters", async () => {
     const longSubject = "a".repeat(73);
-    const result = await validateCommitMessage(`feat: ${longSubject}`, baseConfig);
+    const result = await validateCommitMessage(
+      `feat: ${longSubject}`,
+      baseConfig
+    );
     expect(result.valid).toBe(true);
     expect(result.errors).toStrictEqual([]);
     expect(result.warnings[0]).toContain("Subject exceeds 72 characters");
