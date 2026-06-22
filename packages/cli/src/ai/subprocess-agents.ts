@@ -30,6 +30,14 @@ const promiseWithResolvers = <T>(): PromiseWithResolvers<T> =>
     }
   ).withResolvers<T>();
 
+const assertNonEmptyAiOutput = (text: string, provider: string): string => {
+  const trimmed = text.trim();
+  if (!trimmed) {
+    throw new Error(`${provider} returned empty message`);
+  }
+  return trimmed;
+};
+
 const CODEX_TIMEOUT_MS = 30_000;
 
 const runCodexProcess = async (prompt: string): Promise<string> => {
@@ -71,7 +79,7 @@ const runCodexProcess = async (prompt: string): Promise<string> => {
     if (code !== 0) {
       throw new Error(stderr || `codex exec exited with code ${code}`);
     }
-    return stdout.trim() || "feat: update";
+    return assertNonEmptyAiOutput(stdout, "Codex exec");
   } finally {
     clearTimeout(timeoutId);
   }

@@ -25,7 +25,10 @@ export const createOpenAIProvider = (): AIProvider | null => {
         model: "gpt-4o-mini",
       });
       const text = choices[0]?.message?.content?.trim();
-      return text ?? "feat: update";
+      if (!text) {
+        throw new Error("AI provider returned empty message");
+      }
+      return text;
     },
     name: "openai",
   };
@@ -54,7 +57,10 @@ export const createAnthropicProvider = (): AIProvider | null => {
         .map((c) => ("text" in c ? c.text : ""))
         .join("")
         .trim();
-      return text || "feat: update";
+      if (!text) {
+        throw new Error("AI provider returned empty message");
+      }
+      return text;
     },
     name: "anthropic",
   };
