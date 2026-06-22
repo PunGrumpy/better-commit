@@ -3,7 +3,7 @@ import { once } from "node:events";
 import { createReadStream, existsSync, rmSync } from "node:fs";
 import { mkdtemp, writeFile } from "node:fs/promises";
 import { homedir, tmpdir } from "node:os";
-import { join } from "node:path";
+import path from "node:path";
 import { createInterface } from "node:readline";
 
 import {
@@ -21,7 +21,7 @@ interface PromiseWithResolvers<T> {
 const promiseWithResolvers = <T>(): PromiseWithResolvers<T> =>
   (
     Promise as unknown as {
-      withResolvers<R>(): PromiseWithResolvers<R>;
+      withResolvers: <R>() => PromiseWithResolvers<R>;
     }
   ).withResolvers<T>();
 
@@ -91,7 +91,7 @@ const runClaudeProcess = async (
   });
 
   if (useStdin && tmpDir) {
-    const tmpPath = join(tmpDir, "prompt.txt");
+    const tmpPath = path.join(tmpDir, "prompt.txt");
     const { stdin } = proc;
     if (stdin) {
       createReadStream(tmpPath).pipe(stdin);
@@ -152,8 +152,8 @@ export const claudeCliProvider: AIProvider = {
 
     const args = ["-p"];
     if (useStdin) {
-      tmpDir = await mkdtemp(join(tmpdir(), "better-commit-"));
-      const tmpPath = join(tmpDir, "prompt.txt");
+      tmpDir = await mkdtemp(path.join(tmpdir(), "better-commit-"));
+      const tmpPath = path.join(tmpDir, "prompt.txt");
       await writeFile(tmpPath, prompt, "utf-8");
       args.push(getShortPromptHint());
     } else {
@@ -166,7 +166,7 @@ export const claudeCliProvider: AIProvider = {
   name: "claude-cli",
 };
 
-const AGENT_PATHS = ["agent", join(homedir(), ".local", "bin", "agent")];
+const AGENT_PATHS = ["agent", path.join(homedir(), ".local", "bin", "agent")];
 
 let cachedAgentCommand: string | null = null;
 
@@ -174,14 +174,14 @@ const findAgentCommand = (): string => {
   if (cachedAgentCommand !== null) {
     return cachedAgentCommand;
   }
-  for (const path of AGENT_PATHS) {
-    if (path === "agent") {
+  for (const agentPath of AGENT_PATHS) {
+    if (agentPath === "agent") {
       cachedAgentCommand = "agent";
       return "agent";
     }
-    if (existsSync(path)) {
-      cachedAgentCommand = path;
-      return path;
+    if (existsSync(agentPath)) {
+      cachedAgentCommand = agentPath;
+      return agentPath;
     }
   }
   cachedAgentCommand = "agent";
