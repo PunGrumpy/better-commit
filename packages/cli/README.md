@@ -44,6 +44,41 @@ Optional `aiSuggest` plugs into Cursor, Claude, Codex, OpenAI, Anthropic, and mo
 
 Run `bc check` in pipelines; wire `exec bc commit` in Husky `prepare-commit-msg` so local commits match automation.
 
+## Commands
+
+| Command            | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `bc` / `bc commit` | Interactive commit (default)                         |
+| `bc init`          | Create `commit.config.ts`                            |
+| `bc doctor`        | Verify config loads, list plugins, providers         |
+| `bc check`         | Validate last commit (or `--edit` / `--from`–`--to`) |
+| `bc fix`           | Amend last commit message                            |
+| `bc retry`         | Retry commit from cache                              |
+
+## Options
+
+| Option            | Commands    | Description               |
+| ----------------- | ----------- | ------------------------- |
+| `--no-ai`         | commit, fix | Skip AI                   |
+| `--dry-run`       | commit      | Preview message only      |
+| `-q, --quiet`     | init        | Skip prompts              |
+| `-e, --edit`      | check       | Validate `COMMIT_EDITMSG` |
+| `--from` / `--to` | check       | Validate commit range     |
+
+## Environment variables
+
+| Variable                            | Description                                              |
+| ----------------------------------- | -------------------------------------------------------- |
+| `BETTER_COMMIT_NO_AI=1`             | Disable AI even if `aiSuggest` is configured             |
+| `OPENAI_API_KEY`                    | Optional; required for OpenAI provider                   |
+| `ANTHROPIC_API_KEY`                 | Optional; required for Anthropic provider                |
+| `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` | Auto-approve Cursor ACP tool permissions (default: prompt) |
+
+## Security
+
+- Diffs are sanitized before AI calls unless your config opts out via `allowUnsanitized`
+- Cloud AI providers require credentials via environment variables (see above); never commit API keys
+
 ---
 
-Install **`@better-commit/cli`** from npm. For flags, `bc check` modes, AI providers (`bc doctor`), and security notes, see the **[repository](https://github.com/pungrumpy/better-commit)** and package source.
+Install **`@better-commit/cli`** from npm. For full reference, see the **[docs site](https://better-commit.dev/docs)** (when available) or **[repository](https://github.com/pungrumpy/better-commit)** and package source.
