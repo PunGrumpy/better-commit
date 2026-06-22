@@ -1,16 +1,35 @@
-# better-commit
+<div align="center">
+  <h1>better-commit</h1>
 
-**TypeScript-first conventional commits from a single `commit.config.ts` — composable plugins, optional AI, and the same rules in CI.**
+  <p><strong>TypeScript-first conventional commits from a single <code>commit.config.ts</code> — composable plugins, optional AI, and the same rules in CI.</strong></p>
+
+<a href="https://www.npmjs.com/package/@better-commit/cli"><img alt="npm version" src="https://shieldcn.dev/npm/@better-commit/cli.svg?variant=default&size=default&font=geist-mono"></a>
+<a href="https://www.npmjs.com/package/@better-commit/cli"><img alt="npm downloads" src="https://shieldcn.dev/npm/dm/@better-commit/cli.svg?size=default&font=geist-mono"></a>
+<a href="https://github.com/PunGrumpy/better-commit/blob/main/LICENSE"><img alt="License" src="https://shieldcn.dev/npm/license/@better-commit/cli.svg?size=default&font=geist-mono"></a>
+<a href="https://better-commit.vercel.app/docs"><img alt="Documentation" src="https://shieldcn.dev/badge/docs-better--commit.vercel.app.svg?size=default&font=geist-mono&logo=lu%3ANewspaper"></a>
+
+</div>
 
 better-commit helps you and your AI tools ship consistent commit messages without juggling ad hoc scripts. One config file, one CLI (`bc` / `better-commit`), and you are productive in minutes.
 
-<div>
-  <a href="https://www.npmjs.com/package/@better-commit/cli"><img src="https://img.shields.io/npm/v/@better-commit/cli" alt="npm version" /></a>
-  <a href="https://www.npmjs.com/package/@better-commit/cli"><img src="https://img.shields.io/npm/dm/@better-commit/cli" alt="npm downloads" /></a>
-  <a href="https://github.com/PunGrumpy/better-commit/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@better-commit/cli" alt="license" /></a>
-</div>
+## The config file is the contract
 
-## Quick Start
+A typical setup looks like this:
+
+```text
+my-app/
+├── commit.config.ts          # types, scopes, optional aiSuggest
+├── .husky/
+│   └── prepare-commit-msg    # exec bc commit
+└── .github/workflows/
+    └── commit-check.yml      # bc check
+```
+
+Discovery walks up for `commit.config.ts`, `commit.config.mts`, or `commit.config.js`. Import helpers from **`@better-commit/cli/config`** for a typed, small surface area.
+
+Read the **[documentation](https://better-commit.vercel.app/docs)** for plugins, AI providers, hooks, and CI recipes.
+
+## Quick start
 
 ```sh
 npm install -D @better-commit/cli
@@ -20,30 +39,60 @@ bc
 
 `bc` runs the interactive commit flow. Use `bc doctor` to verify Node, config load, plugins, and AI providers. Non-interactive `bc init` supports `-q`; add `-f` to replace an existing file.
 
-## What you get
+> [!NOTE]
+> The repository includes **`skills/SKILL.md`** with full CLI reference for coding agents. Install the package and point agents at that file, or read the docs site when you need more than this README.
 
-- **`conventionalCommits`** — Allowed types and optional scopes; drives validation in `bc check`.
-- **`defineConfig` + plugins** — Compose `conventionalCommits` (required) and optional **`aiSuggest`** for message suggestions.
-- **`bc check`** — Validate the last message, `COMMIT_EDITMSG`, or a ref range — same rules as locally, ideal for CI.
+### A minimal example
 
-## Key Features
+`bc init` creates a starter config. A trimmed version looks like:
 
-### ⚡ Interactive first
+```typescript
+import { conventionalCommits, defineConfig } from "@better-commit/cli/config";
 
-`bc` and `bc commit` guide the message; `bc fix` amends the last commit; `bc retry` reuses cached form data when you need another try.
+export default defineConfig({
+  plugins: [conventionalCommits({ types: ["feat", "fix", "docs", "chore"] })],
+});
+```
 
-### 🎯 One config file
+```sh
+bc doctor   # config loads, plugins listed
+bc          # interactive commit
+bc check    # same rules in CI
+```
 
-Discovery walks up for `commit.config.ts`, `commit.config.mts`, or `commit.config.js`. Import helpers from **`@better-commit/cli/config`** for typed, small surface area.
+That is enforced commits everywhere — locally, in hooks, and in pipelines. Add **`aiSuggest`** when you want message suggestions from staged diffs.
 
-### 🤖 AI-ready, not AI-required
+## Commands
 
-Optional `aiSuggest` plugs into Cursor, Claude, Codex, OpenAI, Anthropic, and more. Use `--no-ai` or `BETTER_COMMIT_NO_AI=1` for fully manual flows.
+| Command            | Description                                          |
+| ------------------ | ---------------------------------------------------- |
+| `bc` / `bc commit` | Interactive commit (default)                         |
+| `bc init`          | Create `commit.config.ts`                            |
+| `bc doctor`        | Verify config loads, list plugins, providers         |
+| `bc check`         | Validate last commit (or `--edit` / `--from`–`--to`) |
+| `bc fix`           | Amend last commit message                            |
+| `bc retry`         | Retry commit from cache                              |
 
-### 🏗️ CI and hooks
+## Options
 
-Run `bc check` in pipelines; wire `exec bc commit` in Husky `prepare-commit-msg` so local commits match automation.
+| Option            | Commands    | Description               |
+| ----------------- | ----------- | ------------------------- |
+| `--no-ai`         | commit, fix | Skip AI                   |
+| `--dry-run`       | commit      | Preview message only      |
+| `-q, --quiet`     | init        | Skip prompts              |
+| `-e, --edit`      | check       | Validate `COMMIT_EDITMSG` |
+| `--from` / `--to` | check       | Validate commit range     |
 
----
+## Environment variables
 
-Install **`@better-commit/cli`** from npm. For flags, `bc check` modes, AI providers (`bc doctor`), and security notes, see the **[repository](https://github.com/pungrumpy/better-commit)** and package source.
+| Variable                              | Description                                                |
+| ------------------------------------- | ---------------------------------------------------------- |
+| `BETTER_COMMIT_NO_AI=1`               | Disable AI even if `aiSuggest` is configured               |
+| `OPENAI_API_KEY`                      | Optional; required for OpenAI provider                     |
+| `ANTHROPIC_API_KEY`                   | Optional; required for Anthropic provider                  |
+| `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` | Auto-approve Cursor ACP tool permissions (default: prompt) |
+
+## Security
+
+- Diffs are sanitized before AI calls unless your config opts out via `allowUnsanitized`
+- Cloud AI providers require credentials via environment variables (see above); never commit API keys
