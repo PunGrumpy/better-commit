@@ -28,10 +28,13 @@ const promiseWithResolvers = <T>(): PromiseWithResolvers<T> =>
 const CODEX_TIMEOUT_MS = 30_000;
 
 const runCodexProcess = async (prompt: string): Promise<string> => {
-  const proc = spawn("codex", ["exec", prompt], {
+  const proc = spawn("codex", ["exec", "-"], {
     cwd: process.cwd(),
     stdio: ["pipe", "pipe", "pipe"],
   });
+
+  proc.stdin?.write(prompt);
+  proc.stdin?.end();
 
   let stdout = "";
   let stderr = "";
@@ -78,28 +81,24 @@ export const codexExecProvider: AIProvider = {
 };
 
 const CLAUDE_TIMEOUT_MS = 30_000;
-const CLAUDE_ARG_THRESHOLD = 32_000;
 
 const runClaudeProcess = async (
   args: string[],
-  useStdin: boolean,
-  tmpDir: string | null
+  tmpDir: string
 ): Promise<string> => {
   const proc = spawn("claude", args, {
     cwd: process.cwd(),
     stdio: ["pipe", "pipe", "pipe"],
   });
 
-  if (useStdin && tmpDir) {
-    const tmpPath = path.join(tmpDir, "prompt.txt");
-    const { stdin } = proc;
-    if (stdin) {
-      createReadStream(tmpPath).pipe(stdin);
-    }
-    proc.on("close", () => {
-      rmSync(tmpDir, { force: true, recursive: true });
-    });
+  const tmpPath = path.join(tmpDir, "prompt.txt");
+  const { stdin } = proc;
+  if (stdin) {
+    createReadStream(tmpPath).pipe(stdin);
   }
+  proc.on("close", () => {
+    rmSync(tmpDir, { force: true, recursive: true });
+  });
 
   let stdout = "";
   let stderr = "";
@@ -146,22 +145,12 @@ const runClaudeProcess = async (
 export const claudeCliProvider: AIProvider = {
   async generateMessage(diff: string, context: GenerateMessageContext) {
     const prompt = buildCommitPrompt(diff, context, context.customPrompt);
+    const tmpDir = await mkdtemp(path.join(tmpdir(), "better-commit-"));
+    const tmpPath = path.join(tmpDir, "prompt.txt");
+    await writeFile(tmpPath, prompt, "utf-8");
 
-    const useStdin = prompt.length > CLAUDE_ARG_THRESHOLD;
-    let tmpDir: string | null = null;
-
-    const args = ["-p"];
-    if (useStdin) {
-      tmpDir = await mkdtemp(path.join(tmpdir(), "better-commit-"));
-      const tmpPath = path.join(tmpDir, "prompt.txt");
-      await writeFile(tmpPath, prompt, "utf-8");
-      args.push(getShortPromptHint());
-    } else {
-      args.push(prompt);
-    }
-    args.push("--output-format", "json");
-
-    return runClaudeProcess(args, useStdin, tmpDir);
+    const args = ["-p", getShortPromptHint(), "--output-format", "json"];
+    return runClaudeProcess(args, tmpDir);
   },
   name: "claude-cli",
 };
