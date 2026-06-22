@@ -42,7 +42,7 @@ export const collectFormFields = async (
   let breakingChange = "";
   if (breaking) {
     breakingChange = await inputBreakingChange(
-      parsed?.footer?.replace(/^BREAKING CHANGE:\s*/i, "") ?? ""
+      parsed?.footer?.replace(/^BREAKING CHANGE:\s*/iu, "") ?? ""
     );
   } else {
     body = await inputBody(parsed?.body ?? "");

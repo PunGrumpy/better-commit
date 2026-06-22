@@ -12,7 +12,7 @@ const extractFilePaths = (diff: string): string[] => {
   const lines = diff.split("\n");
   for (const line of lines) {
     if (line.startsWith("+++ ") || line.startsWith("--- ")) {
-      const path = line.slice(4).replace(/^\w\//, "");
+      const path = line.slice(4).replace(/^\w\//u, "");
       if (path !== "/dev/null") {
         paths.add(path);
       }
