@@ -2,7 +2,7 @@ import { generate as DefaultImage } from "fumadocs-ui/og";
 import { notFound } from "next/navigation";
 import { ImageResponse } from "next/og";
 
-import { appName } from "@/lib/shared";
+import { title } from "@/lib/shared";
 import { getPageImage, source } from "@/lib/source";
 
 export const revalidate = false;
@@ -21,7 +21,7 @@ export const GET = async (
     <DefaultImage
       title={page.data.title}
       description={page.data.description}
-      site={appName}
+      site={title}
     />,
     {
       height: 630,
