@@ -1,0 +1,95 @@
+---
+title: Getting started
+description: Install better-commit, initialize your config, and create your first commit
+---
+
+This guide walks through installing the CLI, creating `commit.config.ts`, and running your first interactive commit.
+
+## Install
+
+Add better-commit as a dev dependency:
+
+```sh
+npm install -D @better-commit/cli
+```
+
+The `bc` binary is available after install. You can also invoke `better-commit` directly.
+
+## Initialize your config
+
+Run `bc init` to create a starter `commit.config.ts` at your repository root:
+
+```sh
+bc init
+```
+
+Non-interactive mode is available with `-q`. Add `-f` to replace an existing config file.
+
+The default template includes conventional commit types and optional AI suggestions:
+
+```typescript
+import {
+  aiSuggest,
+  conventionalCommits,
+  defineConfig,
+} from "@better-commit/cli/config";
+
+export default defineConfig({
+  plugins: [
+    conventionalCommits({
+      types: [
+        "feat",
+        "fix",
+        "docs",
+        "style",
+        "refactor",
+        "test",
+        "chore",
+        "perf",
+        "ci",
+        "build",
+      ],
+    }),
+    aiSuggest({ provider: "auto" }),
+  ],
+});
+```
+
+Omit **`aiSuggest`** if you want offline-only, manual commits. See [Configuration](/docs/configuration) for plugin options.
+
+## Verify setup
+
+Run the doctor command to confirm config loading, plugins, and AI providers:
+
+```sh
+bc doctor
+```
+
+Doctor checks Node version, config discovery, resolved plugins, and available AI providers.
+
+## Create your first commit
+
+Stage changes, then run the interactive commit flow:
+
+```sh
+git add .
+bc
+```
+
+The CLI prompts for type, scope, and subject based on your config rules. With `aiSuggest` enabled, it can propose a message from your staged diff.
+
+## What you get
+
+After setup, you have:
+
+- **One config file** — `commit.config.ts` is the contract for types, scopes, plugins, and AI
+- **Interactive commits** — `bc` guides you through conventional message format
+- **Shared validation** — `bc check` uses the same rules as the interactive flow
+- **Optional AI** — suggest messages from staged diffs when `aiSuggest` is configured
+- **Git hook support** — `bc init --hooks` installs a Husky `prepare-commit-msg` hook
+
+## Next steps
+
+- [Configuration](/docs/configuration) — customize plugins, scopes, and AI
+- [Commands](/docs/commands) — full CLI reference
+- [CI and hooks](/docs/ci-and-hooks) — enforce rules in pipelines and Git hooks
