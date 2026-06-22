@@ -14,11 +14,8 @@ describe("sanitizeDiff", () => {
   });
 
   test("redacts GitHub personal access token", () => {
-    const diff =
-      "+export GH_TOKEN=ghp_1234567890abcdefghijklmnopqrstuvwxyz;";
-    expect(sanitizeDiff(diff)).toBe(
-      "+export GH_TOKEN=[REDACTED-GITHUB];"
-    );
+    const diff = "+export GH_TOKEN=ghp_1234567890abcdefghijklmnopqrstuvwxyz;";
+    expect(sanitizeDiff(diff)).toBe("+export GH_TOKEN=[REDACTED-GITHUB];");
   });
 
   test("redacts api_key assignment", () => {

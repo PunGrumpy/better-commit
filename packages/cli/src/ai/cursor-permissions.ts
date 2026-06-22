@@ -51,20 +51,23 @@ export const promptForCursorPermission = async (
   return result as string;
 };
 
-export const resolveCursorPermission = async (
+export const resolveCursorPermission = (
   title: string,
   options: AcpPermissionOption[]
 ): Promise<string> => {
   if (process.env.BETTER_COMMIT_CURSOR_AUTO_APPROVE === "1") {
-    const allowOnce = options.find((option) => option.optionId === "allow-once");
+    const allowOnce = options.find(
+      (option) => option.optionId === "allow-once"
+    );
     if (allowOnce) {
-      return "allow-once";
+      return Promise.resolve("allow-once");
     }
     const firstAllow = options.find(
-      (option) =>
-        option.kind === "allow" || option.optionId.startsWith("allow")
+      (option) => option.kind === "allow" || option.optionId.startsWith("allow")
     );
-    return firstAllow?.optionId ?? options[0]?.optionId ?? "allow-once";
+    return Promise.resolve(
+      firstAllow?.optionId ?? options[0]?.optionId ?? "allow-once"
+    );
   }
 
   return promptForCursorPermission(title, options);

@@ -3,8 +3,8 @@ import { describe, expect, test } from "bun:test";
 import {
   isPermissionRejection,
   mapPermissionOptionsToSelect,
-  type AcpPermissionOption,
 } from "../src/ai/cursor-permissions.js";
+import type { AcpPermissionOption } from "../src/ai/cursor-permissions.js";
 
 const sampleOptions: AcpPermissionOption[] = [
   { kind: "allow", name: "Allow once", optionId: "allow-once" },
