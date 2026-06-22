@@ -8,11 +8,11 @@ export const Hero = () => (
     </h1>
 
     <p className="text-[13.5px] sm:text-[15px] text-foreground/50 leading-relaxed light:text-foreground/60">
-      Point your&nbsp;
+      Configure&nbsp;
       <code className="font-mono text-[0.9em] text-foreground/60 light:text-foreground/70">
-        better-commit.config.ts
+        commit.config.ts
       </code>
-      &nbsp;before it&apos;s served.
+      &nbsp;before your commits are served.
     </p>
   </section>
 );
