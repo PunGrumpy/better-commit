@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-export const appName = "BETTER COMMIT";
 export const docsRoute = "/docs";
 export const docsImageRoute = "/og/docs";
 export const docsContentRoute = "/llms.mdx/docs";
