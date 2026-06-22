@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import path from "node:path";
 
 import { createJiti } from "jiti";
 
@@ -19,10 +19,10 @@ const CONFIG_FILENAMES = [
 
 const walkUpDirectories = (startDir: string): string[] => {
   const dirs: string[] = [];
-  let current = resolve(startDir);
+  let current = path.resolve(startDir);
   while (true) {
     dirs.push(current);
-    const parent = dirname(current);
+    const parent = path.dirname(current);
     if (parent === current) {
       break;
     }
@@ -36,7 +36,7 @@ export const findCommitConfigPath = (
 ): string | null => {
   for (const dir of walkUpDirectories(cwd)) {
     for (const name of CONFIG_FILENAMES) {
-      const full = join(dir, name);
+      const full = path.join(dir, name);
       if (existsSync(full)) {
         return full;
       }
@@ -114,16 +114,16 @@ export const loadResolvedConfig = (
   config: ResolvedCommitConfig;
   path: string;
 } => {
-  const path = findCommitConfigPath(cwd);
-  if (!path) {
+  const configPath = findCommitConfigPath(cwd);
+  if (!configPath) {
     throw new ConfigLoadError(
       "missing",
       "No commit.config.ts (or .mts / .js) found. Run `bc init` or add commit.config.ts in the project root.",
-      { pathTried: join(cwd, "commit.config.ts") }
+      { pathTried: path.join(cwd, "commit.config.ts") }
     );
   }
   return {
-    config: loadResolvedConfigFromPath(path),
-    path,
+    config: loadResolvedConfigFromPath(configPath),
+    path: configPath,
   };
 };

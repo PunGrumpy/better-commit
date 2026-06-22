@@ -3,7 +3,7 @@
   "hooks": {
     "afterFileEdit": [
       {
-        "command": "bun fix"
+        "command": "bun format"
       }
     ]
   }

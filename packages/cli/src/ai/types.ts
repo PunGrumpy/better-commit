@@ -8,8 +8,8 @@ export interface GenerateMessageContext {
 
 export interface AIProvider {
   name: string;
-  generateMessage(
+  generateMessage: (
     diff: string,
     context: GenerateMessageContext
-  ): Promise<string>;
+  ) => Promise<string>;
 }
