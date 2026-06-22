@@ -2,6 +2,7 @@ import { Anthropic } from "@anthropic-ai/sdk";
 import { OpenAI } from "openai";
 
 import { getCommitPrompt, buildUserPrompt } from "../prompts/commit-prompt.js";
+import { assertNonEmptyAiOutput } from "./assert-output.js";
 import type { AIProvider, GenerateMessageContext } from "./types.js";
 
 export const createOpenAIProvider = (): AIProvider | null => {
@@ -24,8 +25,8 @@ export const createOpenAIProvider = (): AIProvider | null => {
         ],
         model: "gpt-4o-mini",
       });
-      const text = choices[0]?.message?.content?.trim();
-      return text ?? "feat: update";
+      const text = choices[0]?.message?.content?.trim() ?? "";
+      return assertNonEmptyAiOutput(text, "OpenAI");
     },
     name: "openai",
   };
@@ -54,7 +55,7 @@ export const createAnthropicProvider = (): AIProvider | null => {
         .map((c) => ("text" in c ? c.text : ""))
         .join("")
         .trim();
-      return text || "feat: update";
+      return assertNonEmptyAiOutput(text, "Anthropic");
     },
     name: "anthropic",
   };

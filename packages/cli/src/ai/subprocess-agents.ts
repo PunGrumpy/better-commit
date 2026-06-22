@@ -10,6 +10,12 @@ import {
   buildCommitPrompt,
   getShortPromptHint,
 } from "../prompts/commit-prompt.js";
+import { assertNonEmptyAiOutput } from "./assert-output.js";
+import {
+  isPermissionRejection,
+  resolveCursorPermission,
+} from "./cursor-permissions.js";
+import type { AcpPermissionOption } from "./cursor-permissions.js";
 import type { AIProvider, GenerateMessageContext } from "./types.js";
 
 interface PromiseWithResolvers<T> {
@@ -28,10 +34,13 @@ const promiseWithResolvers = <T>(): PromiseWithResolvers<T> =>
 const CODEX_TIMEOUT_MS = 30_000;
 
 const runCodexProcess = async (prompt: string): Promise<string> => {
-  const proc = spawn("codex", ["exec", prompt], {
+  const proc = spawn("codex", ["exec", "-"], {
     cwd: process.cwd(),
     stdio: ["pipe", "pipe", "pipe"],
   });
+
+  proc.stdin?.write(prompt);
+  proc.stdin?.end();
 
   let stdout = "";
   let stderr = "";
@@ -63,7 +72,7 @@ const runCodexProcess = async (prompt: string): Promise<string> => {
     if (code !== 0) {
       throw new Error(stderr || `codex exec exited with code ${code}`);
     }
-    return stdout.trim() || "feat: update";
+    return assertNonEmptyAiOutput(stdout, "Codex exec");
   } finally {
     clearTimeout(timeoutId);
   }
@@ -78,28 +87,24 @@ export const codexExecProvider: AIProvider = {
 };
 
 const CLAUDE_TIMEOUT_MS = 30_000;
-const CLAUDE_ARG_THRESHOLD = 32_000;
 
 const runClaudeProcess = async (
   args: string[],
-  useStdin: boolean,
-  tmpDir: string | null
+  tmpDir: string
 ): Promise<string> => {
   const proc = spawn("claude", args, {
     cwd: process.cwd(),
     stdio: ["pipe", "pipe", "pipe"],
   });
 
-  if (useStdin && tmpDir) {
-    const tmpPath = path.join(tmpDir, "prompt.txt");
-    const { stdin } = proc;
-    if (stdin) {
-      createReadStream(tmpPath).pipe(stdin);
-    }
-    proc.on("close", () => {
-      rmSync(tmpDir, { force: true, recursive: true });
-    });
+  const tmpPath = path.join(tmpDir, "prompt.txt");
+  const { stdin } = proc;
+  if (stdin) {
+    createReadStream(tmpPath).pipe(stdin);
   }
+  proc.on("close", () => {
+    rmSync(tmpDir, { force: true, recursive: true });
+  });
 
   let stdout = "";
   let stderr = "";
@@ -133,10 +138,13 @@ const runClaudeProcess = async (
     }
     try {
       const json = JSON.parse(stdout) as { result?: string };
-      const text = json.result?.trim();
-      return text || "feat: update";
-    } catch {
-      throw new Error("Failed to parse Claude CLI output");
+      const text = json.result?.trim() ?? "";
+      return assertNonEmptyAiOutput(text, "Claude CLI");
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("empty message")) {
+        throw error;
+      }
+      throw new Error("Failed to parse Claude CLI output", { cause: error });
     }
   } finally {
     clearTimeout(timeoutId);
@@ -146,22 +154,12 @@ const runClaudeProcess = async (
 export const claudeCliProvider: AIProvider = {
   async generateMessage(diff: string, context: GenerateMessageContext) {
     const prompt = buildCommitPrompt(diff, context, context.customPrompt);
+    const tmpDir = await mkdtemp(path.join(tmpdir(), "better-commit-"));
+    const tmpPath = path.join(tmpDir, "prompt.txt");
+    await writeFile(tmpPath, prompt, "utf-8");
 
-    const useStdin = prompt.length > CLAUDE_ARG_THRESHOLD;
-    let tmpDir: string | null = null;
-
-    const args = ["-p"];
-    if (useStdin) {
-      tmpDir = await mkdtemp(path.join(tmpdir(), "better-commit-"));
-      const tmpPath = path.join(tmpDir, "prompt.txt");
-      await writeFile(tmpPath, prompt, "utf-8");
-      args.push(getShortPromptHint());
-    } else {
-      args.push(prompt);
-    }
-    args.push("--output-format", "json");
-
-    return runClaudeProcess(args, useStdin, tmpDir);
+    const args = ["-p", getShortPromptHint(), "--output-format", "json"];
+    return runClaudeProcess(args, tmpDir);
   },
   name: "claude-cli",
 };
@@ -197,6 +195,91 @@ const logTiming = (method: string, ms: number) => {
   }
 };
 
+interface PendingPermissionRequest {
+  id: number;
+  options: AcpPermissionOption[];
+  title: string;
+}
+
+interface AcpIncomingMessage {
+  error?: { message: string };
+  id?: number;
+  method?: string;
+  params?: {
+    options?: AcpPermissionOption[];
+    toolCall?: { title?: string };
+    update?: { sessionUpdate?: string; content?: { text?: string } };
+  };
+  result?: unknown;
+}
+
+const isDefinedAcpId = (id: number | undefined | null): id is number =>
+  id !== undefined && id !== null;
+
+const handleAcpRpcResponse = (
+  msg: AcpIncomingMessage,
+  pending: Map<
+    number,
+    { reject: (e: Error) => void; resolve: (v: unknown) => void }
+  >
+): boolean => {
+  if (!isDefinedAcpId(msg.id)) {
+    return false;
+  }
+
+  const hasResult = msg.result !== undefined && msg.result !== null;
+  const hasError = msg.error !== undefined && msg.error !== null;
+  if (!hasResult && !hasError) {
+    return false;
+  }
+
+  const waiter = pending.get(msg.id);
+  if (!waiter) {
+    return true;
+  }
+
+  pending.delete(msg.id);
+  if (msg.error) {
+    waiter.reject(new Error(msg.error.message));
+  } else {
+    waiter.resolve(msg.result);
+  }
+  return true;
+};
+
+const appendAcpAgentMessage = (
+  msg: AcpIncomingMessage,
+  collectedText: string
+): string => {
+  if (msg.method !== "session/update") {
+    return collectedText;
+  }
+
+  const update = msg.params?.update;
+  if (
+    update?.sessionUpdate !== "agent_message_chunk" ||
+    !update.content?.text
+  ) {
+    return collectedText;
+  }
+
+  return collectedText + update.content.text;
+};
+
+const parseAcpPermissionRequest = (
+  msg: AcpIncomingMessage
+): PendingPermissionRequest | null => {
+  if (msg.method !== "session/request_permission" || !isDefinedAcpId(msg.id)) {
+    return null;
+  }
+
+  return {
+    id: msg.id,
+    options: msg.params?.options ?? [],
+    title: msg.params?.toolCall?.title ?? "Permission requested",
+  };
+};
+
 const runCursorAcp = async (prompt: string): Promise<string> => {
   const agentCmd = findAgentCommand();
   const proc = spawn(agentCmd, ["acp"], {
@@ -210,6 +293,33 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
     { reject: (e: Error) => void; resolve: (v: unknown) => void }
   >();
   let collectedText = "";
+  const permissionQueue: PendingPermissionRequest[] = [];
+  let permissionSignal = promiseWithResolvers<null>();
+  let procClosed = false;
+
+  const notifyPermissionWaiter = () => {
+    permissionSignal.resolve(null);
+    permissionSignal = promiseWithResolvers<null>();
+  };
+
+  const markProcClosed = () => {
+    procClosed = true;
+    notifyPermissionWaiter();
+  };
+
+  const waitForPermissionRequest = async (): Promise<boolean> => {
+    if (permissionQueue.length > 0) {
+      return true;
+    }
+    if (procClosed) {
+      return false;
+    }
+    await permissionSignal.promise;
+    if (permissionQueue.length > 0) {
+      return true;
+    }
+    return !procClosed;
+  };
 
   const send = (method: string, params?: object) => {
     const start = performance.now();
@@ -262,52 +372,17 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
 
   rl.on("line", (line) => {
     try {
-      const msg = JSON.parse(line) as {
-        id?: number;
-        result?: unknown;
-        error?: { message: string };
-        method?: string;
-        params?: {
-          update?: { sessionUpdate?: string; content?: { text?: string } };
-        };
-      };
-
-      const { id } = msg;
-      const hasId = id !== undefined && id !== null;
-      const hasResult = msg.result !== undefined && msg.result !== null;
-      const hasError = msg.error !== undefined && msg.error !== null;
-      if (hasId && (hasResult || hasError)) {
-        const waiter = pending.get(id);
-        if (waiter) {
-          pending.delete(id);
-          if (msg.error) {
-            waiter.reject(new Error(msg.error.message));
-          } else {
-            waiter.resolve(msg.result);
-          }
-        }
+      const msg = JSON.parse(line) as AcpIncomingMessage;
+      if (handleAcpRpcResponse(msg, pending)) {
         return;
       }
 
-      if (msg.method === "session/update") {
-        const update = msg.params?.update;
-        if (
-          update?.sessionUpdate === "agent_message_chunk" &&
-          update.content?.text
-        ) {
-          collectedText += update.content.text;
-        }
-        return;
-      }
+      collectedText = appendAcpAgentMessage(msg, collectedText);
 
-      if (
-        msg.method === "session/request_permission" &&
-        msg.id !== undefined &&
-        msg.id !== null
-      ) {
-        respond(msg.id, {
-          outcome: { optionId: "allow-once", outcome: "selected" },
-        });
+      const permissionRequest = parseAcpPermissionRequest(msg);
+      if (permissionRequest) {
+        permissionQueue.push(permissionRequest);
+        notifyPermissionWaiter();
       }
     } catch {
       // ignore parse errors
@@ -319,16 +394,63 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
   });
 
   proc.on("error", (err) => {
-    clearTimeout(timeoutId);
     fail(err instanceof Error ? err : new Error(String(err)));
   });
 
   proc.on("exit", (code) => {
-    clearTimeout(timeoutId);
     if (code !== 0 && code !== null && collectedText === "") {
       fail(new Error(`agent acp exited with code ${code}`));
     }
   });
+
+  proc.on("close", () => {
+    markProcClosed();
+  });
+
+  const respondToPermissionRequest = async (
+    request: PendingPermissionRequest
+  ): Promise<boolean> => {
+    const optionId = await resolveCursorPermission(
+      request.title,
+      request.options
+    );
+    respond(request.id, {
+      outcome: { optionId, outcome: "selected" },
+    });
+
+    if (isPermissionRejection(optionId, request.options)) {
+      fail(new Error(`Cursor permission denied: ${request.title}`));
+      return false;
+    }
+
+    return true;
+  };
+
+  const handlePermissions = async (): Promise<void> => {
+    const processNext = async (): Promise<void> => {
+      const hasWork = await waitForPermissionRequest();
+      if (!hasWork) {
+        return;
+      }
+
+      const request = permissionQueue.shift();
+      if (!request) {
+        if (procClosed) {
+          return;
+        }
+        return processNext();
+      }
+
+      const shouldContinue = await respondToPermissionRequest(request);
+      if (!shouldContinue) {
+        return;
+      }
+
+      return processNext();
+    };
+
+    await processNext();
+  };
 
   const work = (async () => {
     await send("initialize", {
@@ -348,19 +470,21 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
       prompt: [{ text: prompt, type: "text" }],
       sessionId,
     });
-    clearTimeout(timeoutId);
     proc.stdin?.end();
     await once(proc, "close");
-    return collectedText.trim() || "feat: update";
+    return assertNonEmptyAiOutput(collectedText, "Cursor ACP");
   })();
 
   try {
-    return await Promise.race([work, fatal.promise]);
+    return await Promise.race([
+      Promise.all([handlePermissions(), work]).then(([, result]) => result),
+      fatal.promise,
+    ]);
   } catch (error) {
-    clearTimeout(timeoutId);
     proc.kill("SIGTERM");
     throw error instanceof Error ? error : new Error(String(error));
   } finally {
+    clearTimeout(timeoutId);
     rl.close();
   }
 };

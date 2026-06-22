@@ -4,6 +4,14 @@ const SECRET_PATTERNS: { pattern: RegExp; replacement: string }[] = [
     replacement: "[REDACTED-AWS]",
   },
   {
+    pattern: /\bsk-ant-[a-zA-Z0-9_-]+\b/gu,
+    replacement: "[REDACTED-ANTHROPIC]",
+  },
+  {
+    pattern: /\bsk_live_[a-zA-Z0-9]+\b/gu,
+    replacement: "[REDACTED-STRIPE]",
+  },
+  {
     pattern: /\bsk-[a-zA-Z0-9]{20,}\b/gu,
     replacement: "[REDACTED-OPENAI]",
   },
@@ -20,27 +28,31 @@ const SECRET_PATTERNS: { pattern: RegExp; replacement: string }[] = [
     replacement: "Bearer [REDACTED]",
   },
   {
-    pattern: /password\s*=\s*["']?[^"'\s]+["']?/giu,
+    pattern: /\/\/registry\.npmjs\.org\/:_authToken=\S+/gu,
+    replacement: "//registry.npmjs.org/:_authToken=[REDACTED]",
+  },
+  {
+    pattern:
+      /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----[\s\S]*?-----END (?:RSA |EC )?PRIVATE KEY-----/gu,
+    replacement: "[REDACTED-PEM]",
+  },
+  {
+    pattern: /password\s*=\s*["']?(?!\[REDACTED)[^"'\s]+["']?/giu,
     replacement: "password=[REDACTED]",
   },
   {
-    pattern: /api[_-]?key\s*=\s*["']?[^"'\s]+["']?/giu,
+    pattern: /api[_-]?key\s*=\s*["']?(?!\[REDACTED)[^"'\s]+["']?/giu,
     replacement: "api_key=[REDACTED]",
   },
   {
-    pattern: /secret\s*=\s*["']?[^"'\s]+["']?/giu,
+    pattern: /secret\s*=\s*["']?(?!\[REDACTED)[^"'\s]+["']?/giu,
     replacement: "secret=[REDACTED]",
   },
   {
-    pattern: /token\s*=\s*["']?[^"'\s]+["']?/giu,
+    pattern: /\btoken\s*=\s*["']?(?!\[REDACTED)[^"'\s]+["']?/giu,
     replacement: "token=[REDACTED]",
   },
 ];
-
-const COMBINED_SECRETS = new RegExp(
-  SECRET_PATTERNS.map((p) => `(${p.pattern.source})`).join("|"),
-  "giu"
-);
 
 const MAX_DIFF_CHARS = 16_000;
 
@@ -49,8 +61,10 @@ export const truncateDiff = (diff: string): string =>
     ? `${diff.slice(0, MAX_DIFF_CHARS)}\n\n[... truncated for brevity ...]`
     : diff;
 
-export const sanitizeDiff = (diff: string): string =>
-  diff.replace(COMBINED_SECRETS, (match, ...groups: (string | undefined)[]) => {
-    const idx = groups.findIndex((g) => g !== undefined);
-    return idx === -1 ? match : SECRET_PATTERNS[idx].replacement;
-  });
+export const sanitizeDiff = (diff: string): string => {
+  let result = diff;
+  for (const { pattern, replacement } of SECRET_PATTERNS) {
+    result = result.replace(pattern, replacement);
+  }
+  return result;
+};
