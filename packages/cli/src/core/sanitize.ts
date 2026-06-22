@@ -1,36 +1,45 @@
 const SECRET_PATTERNS: { pattern: RegExp; replacement: string }[] = [
   {
-    pattern: /\b(AKIA|ABIA|ACCA|ASIA)[A-Z0-9]{16}\b/g,
+    pattern: /\b(?<prefix>AKIA|ABIA|ACCA|ASIA)[A-Z0-9]{16}\b/gu,
     replacement: "[REDACTED-AWS]",
   },
-  { pattern: /\bsk-[a-zA-Z0-9]{20,}\b/g, replacement: "[REDACTED-OPENAI]" },
-  { pattern: /\bghp_[a-zA-Z0-9]{36}\b/g, replacement: "[REDACTED-GITHUB]" },
-  { pattern: /\bgho_[a-zA-Z0-9]{36}\b/g, replacement: "[REDACTED-GITHUB]" },
   {
-    pattern: /\bBearer\s+[a-zA-Z0-9._-]+\b/gi,
+    pattern: /\bsk-[a-zA-Z0-9]{20,}\b/gu,
+    replacement: "[REDACTED-OPENAI]",
+  },
+  {
+    pattern: /\bghp_[a-zA-Z0-9]{36}\b/gu,
+    replacement: "[REDACTED-GITHUB]",
+  },
+  {
+    pattern: /\bgho_[a-zA-Z0-9]{36}\b/gu,
+    replacement: "[REDACTED-GITHUB]",
+  },
+  {
+    pattern: /\bBearer\s+[a-zA-Z0-9._-]+\b/giu,
     replacement: "Bearer [REDACTED]",
   },
   {
-    pattern: /password\s*=\s*["']?[^"'\s]+["']?/gi,
+    pattern: /password\s*=\s*["']?[^"'\s]+["']?/giu,
     replacement: "password=[REDACTED]",
   },
   {
-    pattern: /api[_-]?key\s*=\s*["']?[^"'\s]+["']?/gi,
+    pattern: /api[_-]?key\s*=\s*["']?[^"'\s]+["']?/giu,
     replacement: "api_key=[REDACTED]",
   },
   {
-    pattern: /secret\s*=\s*["']?[^"'\s]+["']?/gi,
+    pattern: /secret\s*=\s*["']?[^"'\s]+["']?/giu,
     replacement: "secret=[REDACTED]",
   },
   {
-    pattern: /token\s*=\s*["']?[^"'\s]+["']?/gi,
+    pattern: /token\s*=\s*["']?[^"'\s]+["']?/giu,
     replacement: "token=[REDACTED]",
   },
 ];
 
 const COMBINED_SECRETS = new RegExp(
   SECRET_PATTERNS.map((p) => `(${p.pattern.source})`).join("|"),
-  "gi"
+  "giu"
 );
 
 const MAX_DIFF_CHARS = 16_000;
