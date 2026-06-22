@@ -35,12 +35,14 @@ program
     "-f, --force",
     "Overwrite existing commit.config.ts (required with --quiet when file exists)"
   )
+  .option("--hooks", "Install Husky prepare-commit-msg hook")
   .action(async function initAction(this: Command) {
     const opts = this.opts();
     await runInit({
       cwd: process.cwd(),
       force: opts.force as boolean,
       quiet: opts.quiet as boolean,
+      hooks: opts.hooks as boolean,
     });
   });
 
