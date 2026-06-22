@@ -6,11 +6,11 @@ import { parseCommitMessage } from "./commit-format.js";
 
 const DEFAULT_SUBJECT_MAX_LENGTH = 72;
 
-export const validateCommitMessage = (
+export const validateCommitMessage = async (
   message: string,
   config: ResolvedCommitConfig,
   options?: { subjectMaxLength?: number }
-): ValidationResult => {
+): Promise<ValidationResult> => {
   const errors: string[] = [];
   const warnings: string[] = [];
   const subjectMaxLength =
@@ -63,6 +63,13 @@ export const validateCommitMessage = (
 
   if (parsed.subject.endsWith(".")) {
     warnings.push("Subject should not end with a period");
+  }
+
+  const hooks = config.hooks?.validateMessage ?? [];
+  for (const hook of hooks) {
+    const hookResult = await hook(trimmed);
+    errors.push(...hookResult.errors);
+    warnings.push(...hookResult.warnings);
   }
 
   return {

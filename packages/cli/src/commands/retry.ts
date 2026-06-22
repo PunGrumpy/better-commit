@@ -68,7 +68,7 @@ export const runRetry = async (options: RetryOptions): Promise<void> => {
     breakingChange: c.breakingChange,
   });
 
-  ensureValidMessageOrExit(message, config);
+  await ensureValidMessageOrExit(message, config);
 
   try {
     await gitCommit(message, cwd);

@@ -85,13 +85,13 @@ export const runCheck = async (options: CheckOptions): Promise<void> => {
       p.cancel("No message in COMMIT_EDITMSG");
       exitFailure();
     }
-    const result = validateCommitMessage(message, config);
+    const result = await validateCommitMessage(message, config);
     reportValidationResult(result, "Invalid commit message");
   } else if (options.from !== undefined && options.to !== undefined) {
     const commits = await getCommitsInRange(options.from, options.to, cwd);
     let hasFailure = false;
     for (const { hash, message } of commits) {
-      const result = validateCommitMessage(message, config);
+      const result = await validateCommitMessage(message, config);
       if (!result.valid) {
         hasFailure = true;
         console.error(`  ✗ ${hash} invalid`);
@@ -114,6 +114,6 @@ export const runCheck = async (options: CheckOptions): Promise<void> => {
     exitFailure();
   }
 
-  const result = validateCommitMessage(message, config);
+  const result = await validateCommitMessage(message, config);
   reportValidationResult(result, "Last commit invalid");
 };

@@ -9,14 +9,14 @@ const baseConfig: ResolvedCommitConfig = {
 };
 
 describe("validateMessageForCommit", () => {
-  test("returns valid result for valid message", () => {
-    const result = validateMessageForCommit("feat: add login", baseConfig);
+  test("returns valid result for valid message", async () => {
+    const result = await validateMessageForCommit("feat: add login", baseConfig);
     expect(result.valid).toBe(true);
     expect(result.errors).toStrictEqual([]);
   });
 
-  test("returns type error for invalid type", () => {
-    const result = validateMessageForCommit("wip: stuff", baseConfig);
+  test("returns type error for invalid type", async () => {
+    const result = await validateMessageForCommit("wip: stuff", baseConfig);
     expect(result.valid).toBe(false);
     expect(result.errors[0]).toContain('Type "wip" not in allowed list');
   });

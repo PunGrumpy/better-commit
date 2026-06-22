@@ -4,16 +4,16 @@ import type { ResolvedCommitConfig } from "../config/types.js";
 import { exitFailure } from "./exit.js";
 import { validateCommitMessage } from "./validate-commit.js";
 
-export const validateMessageForCommit = (
+export const validateMessageForCommit = async (
   message: string,
   config: ResolvedCommitConfig
 ) => validateCommitMessage(message, config);
 
-export const ensureValidMessageOrExit = (
+export const ensureValidMessageOrExit = async (
   message: string,
   config: ResolvedCommitConfig
-): void => {
-  const result = validateCommitMessage(message, config);
+): Promise<void> => {
+  const result = await validateCommitMessage(message, config);
   for (const warn of result.warnings) {
     p.log.warn(warn);
   }
