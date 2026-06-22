@@ -1,8 +1,10 @@
 import * as p from "@clack/prompts";
 
+import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
 import type { CommitCache } from "../core/cache.js";
 import { readCache } from "../core/cache.js";
 import { formatCommitMessage } from "../core/commit-format.js";
+import { ensureValidMessageOrExit } from "../core/ensure-valid-message.js";
 import { exitFailure } from "../core/exit.js";
 import {
   commit as gitCommit,
@@ -32,6 +34,17 @@ export const runRetry = async (options: RetryOptions): Promise<void> => {
     exitFailure();
   }
 
+  let config;
+  try {
+    ({ config } = loadResolvedConfig(cwd));
+  } catch (error) {
+    if (error instanceof ConfigLoadError) {
+      p.log.error(error.message);
+      exitFailure();
+    }
+    throw error;
+  }
+
   const c = cache as CommitCache;
 
   let staged = await hasStagedFiles(cwd);
@@ -54,6 +67,8 @@ export const runRetry = async (options: RetryOptions): Promise<void> => {
     breaking: c.breaking,
     breakingChange: c.breakingChange,
   });
+
+  ensureValidMessageOrExit(message, config);
 
   try {
     await gitCommit(message, cwd);
