@@ -12,9 +12,9 @@
   },
   "dependencies": {
     "@repo/design-system": "workspace:*",
-    "fumadocs-core": "16.7.11",
-    "fumadocs-mdx": "14.2.11",
-    "fumadocs-ui": "16.7.11",
+    "fumadocs-core": "16.10.5",
+    "fumadocs-mdx": "15.0.12",
+    "fumadocs-ui": "16.10.5",
     "lucide-react": "catalog:",
     "next": "catalog:",
     "react": "catalog:",
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "catalog:",
-    "@types/mdx": "^2.0.13",
+    "@types/mdx": "^2.0.14",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
