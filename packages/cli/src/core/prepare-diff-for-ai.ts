@@ -11,10 +11,7 @@ export const prepareDiffForAi = (
   const provider = config.ai?.provider ?? "local";
   const allowUnsanitized = config.ai?.allowUnsanitized ?? false;
 
-  if (CLOUD_PROVIDERS.has(provider)) {
-    return sanitizeDiff(truncated);
-  }
-  if (allowUnsanitized) {
+  if (!CLOUD_PROVIDERS.has(provider) && allowUnsanitized) {
     return truncated;
   }
   return sanitizeDiff(truncated);
