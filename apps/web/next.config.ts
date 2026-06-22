@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 
 const withMDX = createMDX();
 
-const config: NextConfig = {};
+const config: NextConfig = {
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
+};
 
 export default withMDX(config);
