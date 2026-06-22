@@ -1,13 +1,59 @@
 ---
-title: Hello World
-description: Your first document
+title: Introduction
+description: TypeScript-first conventional commits from a single commit.config.ts
 ---
 
-Welcome to the docs! You can start writing documents in `/content/docs`.
+better-commit helps you and your AI tools ship consistent commit messages without juggling ad hoc scripts. One config file, one CLI (`bc` / `better-commit`), and you are productive in minutes.
 
-## What is Next?
+## The config file is the contract
+
+A typical setup looks like this:
+
+```text
+my-app/
+├── commit.config.ts          # types, scopes, optional aiSuggest
+├── .husky/
+│   └── prepare-commit-msg    # exec bc commit
+└── .github/workflows/
+    └── commit-check.yml      # bc check
+```
+
+Discovery walks up for `commit.config.ts`, `commit.config.mts`, or `commit.config.js`. Import helpers from **`@better-commit/cli/config`** for a typed, small surface area.
+
+## Quick start
+
+```sh
+npm install -D @better-commit/cli
+bc init
+bc
+```
+
+`bc` runs the interactive commit flow. Use `bc doctor` to verify Node, config load, plugins, and AI providers.
+
+### A minimal example
+
+`bc init` creates a starter config. A trimmed version looks like:
+
+```typescript
+import { conventionalCommits, defineConfig } from "@better-commit/cli/config";
+
+export default defineConfig({
+  plugins: [conventionalCommits({ types: ["feat", "fix", "docs", "chore"] })],
+});
+```
+
+```sh
+bc doctor   # config loads, plugins listed
+bc          # interactive commit
+bc check    # same rules in CI
+```
+
+That is enforced commits everywhere — locally, in hooks, and in pipelines. Add **`aiSuggest`** when you want message suggestions from staged diffs.
+
+## Next steps
 
 <Cards>
-  <Card title="Learn more about Next.js" href="https://nextjs.org/docs" />
-  <Card title="Learn more about Fumadocs" href="https://fumadocs.dev" />
+  <Card title="Getting started" href="/docs/getting-started" />
+  <Card title="Configuration" href="/docs/configuration" />
+  <Card title="Commands" href="/docs/commands" />
 </Cards>
