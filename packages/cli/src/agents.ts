@@ -1,11 +1,11 @@
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import path from "node:path";
 
 const home = homedir();
 const claudeHome =
-  process.env.CLAUDE_CONFIG_DIR?.trim() || join(home, ".claude");
-const codexHome = process.env.CODEX_HOME?.trim() || join(home, ".codex");
+  process.env.CLAUDE_CONFIG_DIR?.trim() || path.join(home, ".claude");
+const codexHome = process.env.CODEX_HOME?.trim() || path.join(home, ".codex");
 
 export type AgentType = "cursor" | "claude-code" | "codex";
 
@@ -16,7 +16,7 @@ const AGENTS: Record<AgentType, { detect: () => boolean }> = {
   codex: {
     detect: () => existsSync(codexHome) || existsSync("/etc/codex"),
   },
-  cursor: { detect: () => existsSync(join(home, ".cursor")) },
+  cursor: { detect: () => existsSync(path.join(home, ".cursor")) },
 };
 
 export const detectInstalledAgents = (): AgentType[] =>

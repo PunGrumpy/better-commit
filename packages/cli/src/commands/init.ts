@@ -1,5 +1,5 @@
 import { existsSync, writeFileSync } from "node:fs";
-import { basename, join } from "node:path";
+import path from "node:path";
 
 import * as p from "@clack/prompts";
 
@@ -42,7 +42,7 @@ export interface InitOptions {
 
 export const runInit = async (options: InitOptions): Promise<void> => {
   const cwd = options.cwd ?? process.cwd();
-  const configPath = join(cwd, COMMIT_CONFIG_FILENAME);
+  const configPath = path.join(cwd, COMMIT_CONFIG_FILENAME);
 
   const existing = existsSync(configPath);
   if (existing && options.quiet && !options.force) {
@@ -66,6 +66,6 @@ export const runInit = async (options: InitOptions): Promise<void> => {
 
   writeFileSync(configPath, TEMPLATE, "utf-8");
   if (!options.quiet) {
-    p.outro(`Created ${basename(configPath)}`);
+    p.outro(`Created ${path.basename(configPath)}`);
   }
 };

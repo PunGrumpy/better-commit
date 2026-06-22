@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 
 import { execa } from "execa";
 
@@ -7,7 +7,7 @@ const git = (args: string[], cwd: string) =>
   execa("git", args, { cwd, reject: false });
 
 export const isGitRepo = (cwd: string = process.cwd()): boolean => {
-  const gitDir = join(cwd, ".git");
+  const gitDir = path.join(cwd, ".git");
   return existsSync(gitDir);
 };
 
@@ -51,11 +51,11 @@ export const getLastCommitDiff = async (
 };
 
 export const getCommitEditMessage = (cwd: string = process.cwd()): string => {
-  const path = join(cwd, ".git", "COMMIT_EDITMSG");
-  if (!existsSync(path)) {
+  const editMessagePath = path.join(cwd, ".git", "COMMIT_EDITMSG");
+  if (!existsSync(editMessagePath)) {
     return "";
   }
-  return readFileSync(path, "utf-8");
+  return readFileSync(editMessagePath, "utf-8");
 };
 
 export interface CommitInRange {

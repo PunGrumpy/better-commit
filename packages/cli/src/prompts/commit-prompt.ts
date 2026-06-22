@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import path from "node:path";
 
 import type { GenerateMessageContext } from "../ai/types.js";
 
@@ -10,7 +10,7 @@ Keep subject under 72 chars, imperative mood.`;
 
 const PROMPT_PATH = (() => {
   const dir = import.meta.dirname;
-  return join(dir, "..", "..", "config", "prompts", "commit.txt");
+  return path.join(dir, "..", "..", "config", "prompts", "commit.txt");
 })();
 
 const promptCache = new Map<string, string>();
