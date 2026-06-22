@@ -1,0 +1,71 @@
+---
+title: AI providers
+description: Provider options, environment variables, and diff sanitization
+---
+
+When **`aiSuggest`** is configured, better-commit can generate commit messages from your staged diff. Choose a provider in `commit.config.ts` or disable AI globally with flags and environment variables.
+
+## Provider overview
+
+| Provider | Description |
+| --- | --- |
+| `local` | Offline heuristics from file paths (no network) |
+| `auto` | Prefer installed coding agents (Cursor, Claude Code, Codex); falls back to `local` |
+| `openai` | OpenAI Chat Completions API |
+| `anthropic` | Anthropic Messages API |
+| `cursor` | Cursor ACP agent subprocess |
+| `claude-cli` | Claude Code CLI subprocess |
+| `codex-exec` | Codex `exec` subprocess |
+
+Configure the provider in your config:
+
+```typescript
+aiSuggest({ provider: "auto" })
+```
+
+Use `bc doctor` to see which providers are available in your environment.
+
+### auto detection
+
+With `provider: "auto"`, better-commit checks for installed agents in order: **Cursor** → **Claude Code** → **Codex**. If none are detected, it uses the offline **`local`** provider or prompts whether to use local heuristics.
+
+### Cloud providers
+
+`openai` and `anthropic` require API credentials via environment variables (see below). Set an optional `model` in `aiSuggest` to override defaults (`gpt-4o-mini` for OpenAI, `claude-3-5-haiku-20241022` for Anthropic).
+
+### Agent subprocesses
+
+`cursor`, `claude-cli`, and `codex-exec` invoke local CLI tools. They require the corresponding agent to be installed and on your `PATH`. Cursor may prompt for ACP tool permissions unless auto-approve is enabled.
+
+## Environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `OPENAI_API_KEY` | Credentials for the OpenAI provider |
+| `ANTHROPIC_API_KEY` | Credentials for the Anthropic provider |
+| `BETTER_COMMIT_NO_AI=1` | Disable AI for `bc commit` and `bc fix` (same as `--no-ai`) |
+| `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` | Auto-approve Cursor ACP tool permissions (default: prompt) |
+
+Never commit API keys. Set credentials in your shell profile, CI secrets, or a local `.env` file that is gitignored.
+
+## Disabling AI
+
+Even with `aiSuggest` in config, you can skip AI:
+
+```sh
+bc --no-ai
+bc fix --no-ai
+BETTER_COMMIT_NO_AI=1 bc
+```
+
+## Diff sanitization
+
+Staged diffs are **sanitized before cloud AI calls** (`openai`, `anthropic`). Common secret patterns (API keys, tokens, PEM blocks, auth headers) are redacted. Subprocess agents also receive sanitized diffs unless you opt out.
+
+Set `allowUnsanitized: true` in `aiSuggest` to skip sanitization — only for **local** and **agent subprocess** providers, not cloud APIs. See [Configuration](/docs/configuration) for the full option reference.
+
+## Agent reference
+
+The repository ships **`skills/SKILL.md`** with a complete CLI reference for coding agents. Install `@better-commit/cli` and point agents at that file, or use this docs site for deeper guides on [configuration](/docs/configuration), [commands](/docs/commands), and [plugins](/docs/plugins).
+
+The root [`README.md`](https://github.com/PunGrumpy/better-commit/blob/main/README.md) covers quick start, environment variables, and security notes.
