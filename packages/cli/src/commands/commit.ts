@@ -4,6 +4,7 @@ import { resolveProvider } from "../ai/index.js";
 import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
 import { writeCache } from "../core/cache.js";
 import { parseCommitMessage } from "../core/commit-format.js";
+import { ensureValidMessageOrExit } from "../core/ensure-valid-message.js";
 import { exitFailure, exitSuccess } from "../core/exit.js";
 import {
   commit as gitCommit,
@@ -105,6 +106,7 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
   }
 
   const message = formFieldsToMessage(fields);
+  ensureValidMessageOrExit(message, config);
 
   const confirmed = await confirmMessage(message);
   if (!confirmed) {
@@ -123,6 +125,8 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
     },
     cwd
   );
+
+  ensureValidMessageOrExit(message, config);
 
   if (options.dryRun) {
     p.outro(`[dry-run] Would commit: ${message}`);
