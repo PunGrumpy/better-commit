@@ -86,10 +86,10 @@ bc check --edit
 
 A typical setup:
 
-| Hook | Purpose |
-| --- | --- |
+| Hook                 | Purpose                                             |
+| -------------------- | --------------------------------------------------- |
 | `prepare-commit-msg` | Run `bc commit` for interactive message composition |
-| `commit-msg` | Run `bc check --edit` as a final gate |
+| `commit-msg`         | Run `bc check --edit` as a final gate               |
 
 You can use either hook alone. Teams that prefer manual `git commit -m` often skip `prepare-commit-msg` and rely on `commit-msg` plus CI.
 

@@ -19,10 +19,10 @@ conventionalCommits({
 });
 ```
 
-| Option | Description |
-| --- | --- |
-| `types` | Non-empty list of allowed commit types |
-| `scopes` | Allowed scopes; omit to allow any scope |
+| Option         | Description                                                             |
+| -------------- | ----------------------------------------------------------------------- |
+| `types`        | Non-empty list of allowed commit types                                  |
+| `scopes`       | Allowed scopes; omit to allow any scope                                 |
 | `strictScopes` | Reject scopes not in the list (defaults to `true` when `scopes` is set) |
 
 Plugin ID: **`conventional-commits`**
@@ -75,11 +75,11 @@ export default defineConfig({
 
 Return shape:
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `valid` | `boolean` | Whether the message passes this hook |
-| `errors` | `string[]` | Blocking issues |
-| `warnings` | `string[]` | Non-blocking notices |
+| Field      | Type       | Description                          |
+| ---------- | ---------- | ------------------------------------ |
+| `valid`    | `boolean`  | Whether the message passes this hook |
+| `errors`   | `string[]` | Blocking issues                      |
+| `warnings` | `string[]` | Non-blocking notices                 |
 
 Hooks may be synchronous or async. Multiple hooks from different plugins run sequentially.
 

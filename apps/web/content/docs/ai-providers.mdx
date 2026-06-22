@@ -7,20 +7,20 @@ When **`aiSuggest`** is configured, better-commit can generate commit messages f
 
 ## Provider overview
 
-| Provider | Description |
-| --- | --- |
-| `local` | Offline heuristics from file paths (no network) |
-| `auto` | Prefer installed coding agents (Cursor, Claude Code, Codex); falls back to `local` |
-| `openai` | OpenAI Chat Completions API |
-| `anthropic` | Anthropic Messages API |
-| `cursor` | Cursor ACP agent subprocess |
-| `claude-cli` | Claude Code CLI subprocess |
-| `codex-exec` | Codex `exec` subprocess |
+| Provider     | Description                                                                        |
+| ------------ | ---------------------------------------------------------------------------------- |
+| `local`      | Offline heuristics from file paths (no network)                                    |
+| `auto`       | Prefer installed coding agents (Cursor, Claude Code, Codex); falls back to `local` |
+| `openai`     | OpenAI Chat Completions API                                                        |
+| `anthropic`  | Anthropic Messages API                                                             |
+| `cursor`     | Cursor ACP agent subprocess                                                        |
+| `claude-cli` | Claude Code CLI subprocess                                                         |
+| `codex-exec` | Codex `exec` subprocess                                                            |
 
 Configure the provider in your config:
 
 ```typescript
-aiSuggest({ provider: "auto" })
+aiSuggest({ provider: "auto" });
 ```
 
 Use `bc doctor` to see which providers are available in your environment.
@@ -39,12 +39,12 @@ With `provider: "auto"`, better-commit checks for installed agents in order: **C
 
 ## Environment variables
 
-| Variable | Purpose |
-| --- | --- |
-| `OPENAI_API_KEY` | Credentials for the OpenAI provider |
-| `ANTHROPIC_API_KEY` | Credentials for the Anthropic provider |
-| `BETTER_COMMIT_NO_AI=1` | Disable AI for `bc commit` and `bc fix` (same as `--no-ai`) |
-| `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` | Auto-approve Cursor ACP tool permissions (default: prompt) |
+| Variable                              | Purpose                                                     |
+| ------------------------------------- | ----------------------------------------------------------- |
+| `OPENAI_API_KEY`                      | Credentials for the OpenAI provider                         |
+| `ANTHROPIC_API_KEY`                   | Credentials for the Anthropic provider                      |
+| `BETTER_COMMIT_NO_AI=1`               | Disable AI for `bc commit` and `bc fix` (same as `--no-ai`) |
+| `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` | Auto-approve Cursor ACP tool permissions (default: prompt)  |
 
 Never commit API keys. Set credentials in your shell profile, CI secrets, or a local `.env` file that is gitignored.
 
