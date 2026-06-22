@@ -7,6 +7,11 @@ import path from "node:path";
 import { createInterface } from "node:readline";
 
 import {
+  isPermissionRejection,
+  resolveCursorPermission,
+  type AcpPermissionOption,
+} from "./cursor-permissions.js";
+import {
   buildCommitPrompt,
   getShortPromptHint,
 } from "../prompts/commit-prompt.js";
@@ -186,6 +191,12 @@ const logTiming = (method: string, ms: number) => {
   }
 };
 
+interface PendingPermissionRequest {
+  id: number;
+  options: AcpPermissionOption[];
+  title: string;
+}
+
 const runCursorAcp = async (prompt: string): Promise<string> => {
   const agentCmd = findAgentCommand();
   const proc = spawn(agentCmd, ["acp"], {
@@ -199,6 +210,22 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
     { reject: (e: Error) => void; resolve: (v: unknown) => void }
   >();
   let collectedText = "";
+  const permissionQueue: PendingPermissionRequest[] = [];
+  let permissionWaiter: (() => void) | null = null;
+
+  const notifyPermissionWaiter = () => {
+    permissionWaiter?.();
+    permissionWaiter = null;
+  };
+
+  const waitForPermissionRequest = async (): Promise<void> => {
+    if (permissionQueue.length > 0) {
+      return;
+    }
+    await new Promise<void>((resolve) => {
+      permissionWaiter = resolve;
+    });
+  };
 
   const send = (method: string, params?: object) => {
     const start = performance.now();
@@ -257,6 +284,8 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
         error?: { message: string };
         method?: string;
         params?: {
+          options?: AcpPermissionOption[];
+          toolCall?: { title?: string };
           update?: { sessionUpdate?: string; content?: { text?: string } };
         };
       };
@@ -294,9 +323,12 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
         msg.id !== undefined &&
         msg.id !== null
       ) {
-        respond(msg.id, {
-          outcome: { optionId: "allow-once", outcome: "selected" },
+        permissionQueue.push({
+          id: msg.id,
+          options: msg.params?.options ?? [],
+          title: msg.params?.toolCall?.title ?? "Permission requested",
         });
+        notifyPermissionWaiter();
       }
     } catch {
       // ignore parse errors
@@ -318,6 +350,31 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
       fail(new Error(`agent acp exited with code ${code}`));
     }
   });
+
+  const handlePermissions = async () => {
+    while (true) {
+      await waitForPermissionRequest();
+      while (permissionQueue.length > 0) {
+        const request = permissionQueue.shift();
+        if (!request) {
+          continue;
+        }
+
+        const optionId = await resolveCursorPermission(
+          request.title,
+          request.options
+        );
+        respond(request.id, {
+          outcome: { optionId, outcome: "selected" },
+        });
+
+        if (isPermissionRejection(optionId, request.options)) {
+          fail(new Error(`Cursor permission denied: ${request.title}`));
+          return;
+        }
+      }
+    }
+  };
 
   const work = (async () => {
     await send("initialize", {
@@ -344,7 +401,10 @@ const runCursorAcp = async (prompt: string): Promise<string> => {
   })();
 
   try {
-    return await Promise.race([work, fatal.promise]);
+    return await Promise.race([
+      Promise.all([handlePermissions(), work]).then(([, result]) => result),
+      fatal.promise,
+    ]);
   } catch (error) {
     clearTimeout(timeoutId);
     proc.kill("SIGTERM");
