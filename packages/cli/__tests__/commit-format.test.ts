@@ -65,11 +65,16 @@ describe("formatCommitMessage round-trip", () => {
   });
 
   test("round-trips breaking commit with body and footer", () => {
-    const formatted = formatCommitMessage("feat", "auth", "remove legacy login", {
-      breaking: true,
-      body: "Legacy login is no longer supported.",
-      breakingChange: "Users must migrate to OAuth.",
-    });
+    const formatted = formatCommitMessage(
+      "feat",
+      "auth",
+      "remove legacy login",
+      {
+        body: "Legacy login is no longer supported.",
+        breaking: true,
+        breakingChange: "Users must migrate to OAuth.",
+      }
+    );
     const parsed = parseCommitMessage(formatted);
     expect(parsed).toStrictEqual({
       body: "Legacy login is no longer supported.",
