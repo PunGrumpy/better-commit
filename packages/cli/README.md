@@ -62,6 +62,15 @@ bc check    # same rules in CI
 
 That is enforced commits everywhere — locally, in hooks, and in pipelines. Add **`aiSuggest`** when you want message suggestions from staged diffs.
 
+## Git hooks
+
+To integrate better-commit with your Git hooks:
+
+```sh
+bc init --hooks
+# Requires Husky: npm install -D husky && npx husky init
+```
+
 ## Commands
 
 | Command            | Description                                          |
@@ -80,6 +89,7 @@ That is enforced commits everywhere — locally, in hooks, and in pipelines. Add
 | `--no-ai`         | commit, fix | Skip AI                   |
 | `--dry-run`       | commit      | Preview message only      |
 | `-q, --quiet`     | init        | Skip prompts              |
+| `--hooks`         | init        | Install Husky hooks       |
 | `-e, --edit`      | check       | Validate `COMMIT_EDITMSG` |
 | `--from` / `--to` | check       | Validate commit range     |
 

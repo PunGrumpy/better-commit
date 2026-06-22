@@ -38,6 +38,7 @@ Interactive conventional commits with optional AI, driven by **`commit.config.ts
 | `--no-ai`         | commit, fix | Skip AI                   |
 | `--dry-run`       | commit      | Preview message only      |
 | `-q, --quiet`     | init        | Skip prompts              |
+| `--hooks`         | init        | Install Husky hooks       |
 | `-e, --edit`      | check       | Validate `COMMIT_EDITMSG` |
 | `--from` / `--to` | check       | Validate commit range     |
 
@@ -68,6 +69,13 @@ Omit **`aiSuggest`** for offline-only / manual commits.
 - `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` — auto-approve Cursor ACP tool permissions (default: prompt user)
 
 ## Git hooks
+
+To integrate better-commit with your Git hooks:
+
+```sh
+bc init --hooks
+# Requires Husky: npm install -D husky && npx husky init
+```
 
 Example `.husky/prepare-commit-msg`:
 
