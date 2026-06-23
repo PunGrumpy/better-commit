@@ -57,13 +57,19 @@ This writes **`.husky/prepare-commit-msg`**:
 
 ```bash
 #!/usr/bin/env sh
-# better-commit: run interactive commit
-exec bc commit
+# better-commit: interactive commit message for git commit
+
+[ -n "$BETTER_COMMIT_SKIP_HOOK" ] && exit 0
+[ "$2" = "merge" ] || [ "$2" = "squash" ] && exit 0
+export GIT_EDITOR=cat
+exec < /dev/tty > /dev/tty 2>&1 bc commit --hook "$1"
 ```
 
-When you run `git commit`, Husky invokes `bc commit`, which guides you through type, scope, and subject based on your config.
+When you run `git commit`, Husky invokes `bc commit --hook` with Git's message file path. better-commit guides you through type, scope, and subject, writes the message to **`COMMIT_EDITMSG`**, and returns control to Git — no nested `git commit`, no second editor.
 
-Use `-q -f` with `bc init --hooks` in non-interactive setups to overwrite an existing hook.
+You can also run **`bc`** or **`bc commit`** directly; it sets `BETTER_COMMIT_SKIP_HOOK` when calling Git so the hook does not run again.
+
+Merge and squash commits skip the hook so Git's auto-generated messages are preserved. Use `-q -f` with `bc init --hooks` in non-interactive setups to overwrite an existing hook.
 
 ## commit-msg validation
 
@@ -86,10 +92,10 @@ bc check --edit
 
 A typical setup:
 
-| Hook                 | Purpose                                             |
-| -------------------- | --------------------------------------------------- |
-| `prepare-commit-msg` | Run `bc commit` for interactive message composition |
-| `commit-msg`         | Run `bc check --edit` as a final gate               |
+| Hook                 | Purpose                                                    |
+| -------------------- | ---------------------------------------------------------- |
+| `prepare-commit-msg` | Run `bc commit --hook` for interactive message composition |
+| `commit-msg`         | Run `bc check --edit` as a final gate                      |
 
 You can use either hook alone. Teams that prefer manual `git commit -m` often skip `prepare-commit-msg` and rely on `commit-msg` plus CI.
 

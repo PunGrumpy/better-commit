@@ -10,8 +10,15 @@ export const installHuskyHook = (cwd: string = process.cwd()): void => {
   }
   const hookPath = path.join(huskyDir, "prepare-commit-msg");
   const huskyShim = path.join(huskyDir, "_", "husky.sh");
-  const content = existsSync(huskyShim)
-    ? `#!/usr/bin/env sh\n. "${huskyShim}"\n\n${PREPARE_COMMIT_MSG_SCRIPT}`
-    : PREPARE_COMMIT_MSG_SCRIPT;
-  writeFileSync(hookPath, content, { encoding: "utf-8", mode: 0o755 });
+  const lines = ["#!/usr/bin/env sh"];
+  if (existsSync(huskyShim)) {
+    lines.push(`. "${huskyShim}"`, "");
+  } else {
+    lines.push("");
+  }
+  lines.push(PREPARE_COMMIT_MSG_SCRIPT.trimEnd());
+  writeFileSync(hookPath, `${lines.join("\n")}\n`, {
+    encoding: "utf-8",
+    mode: 0o755,
+  });
 };

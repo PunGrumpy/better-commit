@@ -8,3 +8,6 @@ export const exitFailure = (message?: string): never => {
   }
   process.exit(1);
 };
+
+export const exitCancel = (): never =>
+  process.env.BETTER_COMMIT_HOOK_MODE === "1" ? exitFailure() : exitSuccess();

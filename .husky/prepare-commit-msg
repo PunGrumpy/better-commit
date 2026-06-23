@@ -1,4 +1,6 @@
-export const PREPARE_COMMIT_MSG_SCRIPT = `# better-commit: interactive commit message for git commit
+#!/usr/bin/env sh
+
+# better-commit: interactive commit message for git commit
 
 # Skip when bc is completing its own git commit
 [ -n "$BETTER_COMMIT_SKIP_HOOK" ] && exit 0
@@ -11,4 +13,3 @@ export GIT_EDITOR=cat
 
 # Reattach TTY for clack prompts (hooks are non-interactive by default)
 exec < /dev/tty > /dev/tty 2>&1 bc commit --hook "$1"
-`;

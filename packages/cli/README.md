@@ -20,7 +20,7 @@ A typical setup looks like this:
 my-app/
 ├── commit.config.ts          # types, scopes, optional aiSuggest
 ├── .husky/
-│   └── prepare-commit-msg    # exec bc commit
+│   └── prepare-commit-msg    # bc commit --hook (via git commit)
 └── .github/workflows/
     └── commit-check.yml      # bc check
 ```
@@ -95,12 +95,13 @@ bc init --hooks
 
 ## Environment variables
 
-| Variable                              | Description                                                |
-| ------------------------------------- | ---------------------------------------------------------- |
-| `BETTER_COMMIT_NO_AI=1`               | Disable AI even if `aiSuggest` is configured               |
-| `OPENAI_API_KEY`                      | Optional; required for OpenAI provider                     |
-| `ANTHROPIC_API_KEY`                   | Optional; required for Anthropic provider                  |
-| `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` | Auto-approve Cursor ACP tool permissions (default: prompt) |
+| Variable                              | Description                                                       |
+| ------------------------------------- | ----------------------------------------------------------------- |
+| `BETTER_COMMIT_NO_AI=1`               | Disable AI even if `aiSuggest` is configured                      |
+| `BETTER_COMMIT_SKIP_HOOK=1`           | Skip `prepare-commit-msg` hook (set automatically by `bc commit`) |
+| `OPENAI_API_KEY`                      | Optional; required for OpenAI provider                            |
+| `ANTHROPIC_API_KEY`                   | Optional; required for Anthropic provider                         |
+| `BETTER_COMMIT_CURSOR_AUTO_APPROVE=1` | Auto-approve Cursor ACP tool permissions (default: prompt)        |
 
 ## Security
 

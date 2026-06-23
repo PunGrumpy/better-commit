@@ -1,6 +1,6 @@
 import * as p from "@clack/prompts";
 
-import { exitFailure, exitSuccess } from "../core/exit.js";
+import { exitCancel, exitFailure } from "../core/exit.js";
 
 export const showAiContext = (isAiSuggested: boolean): void => {
   if (!isAiSuggested) {
@@ -36,7 +36,7 @@ export const selectType = async (
     })),
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   return result as string;
 };
@@ -63,7 +63,7 @@ export const inputScope = async (
       ],
     });
     if (p.isCancel(result)) {
-      exitSuccess();
+      exitCancel();
     }
     return result as string;
   }
@@ -79,7 +79,7 @@ export const inputScope = async (
     placeholder,
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   return (result as string) ?? "";
 };
@@ -92,7 +92,7 @@ export const inputSubject = async (initial?: string): Promise<string> => {
     placeholder: "short description",
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   const value = (result as string)?.trim();
   if (!value) {
@@ -108,7 +108,7 @@ export const confirmMessage = async (message: string): Promise<boolean> => {
     message: `Commit with: ${message}`,
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   return result as boolean;
 };
@@ -119,7 +119,7 @@ export const confirmStageAll = async (): Promise<boolean> => {
     message: "No staged files. Stage all changes?",
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   return result as boolean;
 };
@@ -130,7 +130,7 @@ export const selectUseAI = async (): Promise<boolean> => {
     message: "Generate message with AI?",
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   return result as boolean;
 };
@@ -144,7 +144,7 @@ export const confirmBreakingChange = async (
     message,
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   return result as boolean;
 };
@@ -157,7 +157,7 @@ export const inputBody = async (initial = ""): Promise<string> => {
     placeholder: "Multi-line description",
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   return (result as string)?.trim() ?? "";
 };
@@ -170,7 +170,7 @@ export const inputBreakingChange = async (initial = ""): Promise<string> => {
     placeholder: "Describe what changed",
   });
   if (p.isCancel(result)) {
-    exitSuccess();
+    exitCancel();
   }
   return (result as string)?.trim() ?? "";
 };

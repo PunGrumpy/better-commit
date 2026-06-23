@@ -42,10 +42,13 @@
     "changeset:version": "changeset version",
     "changeset:publish": "turbo run build && changeset publish",
     "bump-ui": "bunx shadcn@latest add --all --overwrite -c packages/design-system",
-    "clean": "git clean -xdf node_modules"
+    "clean": "git clean -xdf node_modules",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@better-commit/cli": "workspace:*",
     "@changesets/cli": "^2.31.0",
+    "husky": "^9.1.7",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.70.0",
     "turbo": "^2.9.18",
