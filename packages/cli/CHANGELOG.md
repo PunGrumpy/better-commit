@@ -1,5 +1,22 @@
 # @better-commit/cli
 
+## 1.1.0
+
+### Minor Changes
+
+- 1cd0e2f: Invoke plugin `validateMessage` hooks during commit message validation.
+- 4c15f4e: Add `bc init --hooks` to install Husky `prepare-commit-msg` hook for interactive commits.
+
+### Patch Changes
+
+- fe1acad: Validate commit messages before git commit, amend, and retry so interactive flows match `bc check` rules.
+- 6d6cfa6: Improve AI security: expand diff secret redaction, pass prompts via stdin, prompt for Cursor ACP permissions by default, reject empty AI output, and fix Cursor ACP hang timeout.
+- aed40f7: Honor `aiSuggest` `model` and `allowUnsanitized` config options; cloud providers always sanitize diffs.
+- b49ef2f: Expand npm README with commands, options, environment variables, and security notes.
+- 41c97cb: Link npm README to the docs site.
+- c7ae9bb: Fix Husky `prepare-commit-msg` hook in CI: skip when `CI` is set or no TTY is available, and invoke `better-commit` instead of `bc` to avoid GNU bc (calculator) on Linux.
+- 7517e43: Fix Husky `prepare-commit-msg` hook: add `bc commit --hook` to write `COMMIT_EDITMSG` instead of nesting `git commit`, reattach TTY, skip re-entry with `BETTER_COMMIT_SKIP_HOOK`, and avoid opening a second editor with `GIT_EDITOR=cat`.
+
 ## 1.0.0
 
 ### Major Changes
