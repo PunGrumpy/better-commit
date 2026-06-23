@@ -113,15 +113,72 @@ export const confirmMessage = async (message: string): Promise<boolean> => {
   return result as boolean;
 };
 
-export const confirmStageAll = async (): Promise<boolean> => {
-  const result = await p.confirm({
-    initialValue: true,
-    message: "No staged files. Stage all changes?",
+export const stageChangesPrompt = async (
+  unstagedFiles: string[]
+): Promise<string[] | false> => {
+  if (unstagedFiles.length === 0) {
+    return [];
+  }
+
+  if (unstagedFiles.length <= 10) {
+    const result = await p.multiselect({
+      initialValues: unstagedFiles,
+      message: "No staged files. Select files to stage:",
+      options: unstagedFiles.map((file) => ({
+        label: file,
+        value: file,
+      })),
+      required: false,
+    });
+
+    if (p.isCancel(result)) {
+      exitCancel();
+    }
+
+    return result as string[];
+  }
+
+  const choice = await p.select({
+    message: `No staged files. Found ${unstagedFiles.length} unstaged files. How would you like to proceed?`,
+    options: [
+      {
+        label: "Stage all files and commit",
+        value: "all",
+      },
+      {
+        label: "Select files to stage...",
+        value: "interactive",
+      },
+    ],
   });
-  if (p.isCancel(result)) {
+
+  if (p.isCancel(choice)) {
     exitCancel();
   }
-  return result as boolean;
+
+  if (choice === "all") {
+    return unstagedFiles;
+  }
+
+  if (choice === "interactive") {
+    const result = await p.multiselect({
+      initialValues: unstagedFiles,
+      message: "Select files to stage:",
+      options: unstagedFiles.map((file) => ({
+        label: file,
+        value: file,
+      })),
+      required: false,
+    });
+
+    if (p.isCancel(result)) {
+      exitCancel();
+    }
+
+    return result as string[];
+  }
+
+  return false;
 };
 
 export const selectUseAI = async (): Promise<boolean> => {
