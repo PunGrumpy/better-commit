@@ -1,5 +1,21 @@
 # @better-commit/cli
 
+## 1.2.0
+
+### Minor Changes
+
+- 935b935: Add interactive file staging when committing with unstaged files, allowing users to select a subset of files to stage and commit.
+- 35f9df3: Add support for intra-PR commit-level stacking:
+
+  - Introduce the `stacking` plugin to automatically generate and inject stable `Change-Id` footers into commits.
+  - Add `bc stack` command to view the local commit stack, positions, and Change-Ids.
+  - Add `bc amend <target>` command to stage changes into intermediate commits using a headless Git autosquash rebase.
+  - Validate `Change-Id` existence in commit messages under CI check mode.
+
+### Patch Changes
+
+- 28a6720: Remove `catalog:` dependencies to resolve bun/npm install errors on published CLI packages.
+
 ## 1.1.0
 
 ### Minor Changes
