@@ -42,11 +42,42 @@ aiSuggest({
 
 Plugin ID: **`ai-suggest`**
 
+### stacking
+
+Enables commit-level stacking by automatically appending stable `Change-Id` footers to your commit messages and enforcing them during checks.
+
+```typescript
+stacking({
+  changeId: true,
+});
+```
+
+| Option     | Description                                                        |
+| ---------- | ------------------------------------------------------------------ |
+| `changeId` | Enable stable Change-Id injection and validation (default: `true`) |
+
+Plugin ID: **`stacking`**
+
 See [AI providers](/docs/ai-providers) for provider options and [Configuration](/docs/configuration) for the full option table.
 
 ## Custom plugins
 
 Add plugins with a unique `id` and optional `hooks`. Each plugin must set `apiVersion: 1`.
+
+### prepareMessage hooks
+
+Plugins can register **`hooks.prepareMessage`** to transform the commit message quietly right before it is written (either during dry-run, in a git prepare-commit-msg hook, or right before a commit).
+
+Example — append issue number to all commit bodies:
+
+```typescript
+{
+  id: "add-issue-suffix",
+  hooks: {
+    prepareMessage: (msg) => `${msg.trim()}\n\nRefs: #42`
+  }
+}
+```
 
 ### validateMessage hooks
 
