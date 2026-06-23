@@ -28,8 +28,8 @@ describe("installHuskyHook", () => {
     const content = readFileSync(hookPath, "utf-8");
     expect(content).toContain("BETTER_COMMIT_SKIP_HOOK");
     expect(content).toContain("GIT_EDITOR=cat");
-    expect(content).toContain("/dev/tty");
     expect(content).toContain("bc commit --hook");
+    expect(content).toContain("exec 0</dev/tty");
   });
 
   test("prepare-commit-msg script skips merge and squash", () => {
