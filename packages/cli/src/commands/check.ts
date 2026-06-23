@@ -44,6 +44,7 @@ const reportValidationResult = (
 };
 
 export const runCheck = async (options: CheckOptions): Promise<void> => {
+  process.env.BETTER_COMMIT_CHECK_MODE = "1";
   const cwd = options.cwd ?? process.cwd();
 
   p.intro("better-commit check");
