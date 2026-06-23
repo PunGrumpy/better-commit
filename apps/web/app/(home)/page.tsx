@@ -47,9 +47,14 @@ const HomePage = () => (
     <h1 className="text-pretty text-2xl font-semibold">
       Every commit, vetted before it reaches your repository
     </h1>
-    <div className="flex w-full max-w-2xl items-center gap-4 justify-center">
-      <Installer command="npx better-commit/cli" />
-      <Button nativeButton={false} size="lg" render={<Link href="/docs" />}>
+    <div className="flex flex-col sm:flex-row w-full max-w-2xl items-stretch sm:items-center gap-4 justify-center">
+      <Installer command="npx better-commit/cli" className="w-full sm:w-48" />
+      <Button
+        nativeButton={false}
+        size="lg"
+        render={<Link href="/docs" />}
+        className="w-full sm:w-auto"
+      >
         Read docs
       </Button>
     </div>
