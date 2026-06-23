@@ -69,6 +69,7 @@ export const runAmend = async (
   if (!targetItem) {
     p.cancel(`Could not find commit in stack matching identifier: "${target}"`);
     exitFailure();
+    return;
   }
 
   const title = targetItem.message.split("\n")[0] ?? "No subject";
@@ -80,6 +81,7 @@ export const runAmend = async (
   if (p.isCancel(confirm) || !confirm) {
     p.cancel("Amend cancelled");
     exitSuccess();
+    return;
   }
 
   const spinner = p.spinner();
