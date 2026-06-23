@@ -69,14 +69,13 @@ Doctor checks Node version, config discovery, resolved plugins, and available AI
 
 ## Create your first commit
 
-Stage changes, then run the interactive commit flow:
+Run the interactive commit flow:
 
 ```sh
-git add .
 bc
 ```
 
-The CLI prompts for type, scope, and subject based on your config rules. With `aiSuggest` enabled, it can propose a message from your staged diff.
+If you haven't staged any files yet, `better-commit` will automatically scan your repository and prompt you to stage them interactively. Once staged, the CLI prompts for commit type, scope, and subject based on your configuration rules. With `aiSuggest` enabled, it will also propose a message from your staged diff.
 
 ## What you get
 
