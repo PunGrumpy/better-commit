@@ -10,9 +10,10 @@ import { exitCancel, exitFailure, exitSuccess } from "../core/exit.js";
 import {
   commit as gitCommit,
   getStagedDiff,
+  getUnstagedFiles,
   hasStagedFiles,
   isGitRepo,
-  stageAll,
+  stageFiles,
   writeHookCommitMessage,
 } from "../core/git.js";
 import { prepareDiffForAi } from "../core/prepare-diff-for-ai.js";
@@ -24,8 +25,8 @@ import {
 import type { FormFields } from "../prompts/form-fields.js";
 import {
   confirmMessage,
-  confirmStageAll,
   selectUseAI,
+  stageChangesPrompt,
 } from "../prompts/interactive.js";
 
 export interface CommitOptions {
@@ -40,12 +41,21 @@ const ensureStaged = async (cwd: string): Promise<void> => {
   if (staged) {
     return;
   }
-  const stage = await confirmStageAll();
-  if (!stage) {
-    p.cancel("No staged files");
+
+  const unstagedFiles = await getUnstagedFiles(cwd);
+  if (unstagedFiles.length === 0) {
+    p.cancel("No changes to commit (working directory is clean)");
     exitFailure();
   }
-  await stageAll(cwd);
+
+  const filesToStage = await stageChangesPrompt(unstagedFiles);
+  if (!filesToStage || filesToStage.length === 0) {
+    p.cancel("No staged files");
+    exitFailure();
+    return;
+  }
+
+  await stageFiles(filesToStage, cwd);
   staged = await hasStagedFiles(cwd);
   if (!staged) {
     p.cancel("Nothing to commit");

@@ -8,11 +8,12 @@ import { ensureValidMessageOrExit } from "../core/ensure-valid-message.js";
 import { exitFailure } from "../core/exit.js";
 import {
   commit as gitCommit,
+  getUnstagedFiles,
   hasStagedFiles,
   isGitRepo,
-  stageAll,
+  stageFiles,
 } from "../core/git.js";
-import { confirmStageAll } from "../prompts/interactive.js";
+import { stageChangesPrompt } from "../prompts/interactive.js";
 
 export interface RetryOptions {
   cwd?: string;
@@ -49,12 +50,20 @@ export const runRetry = async (options: RetryOptions): Promise<void> => {
 
   let staged = await hasStagedFiles(cwd);
   if (!staged) {
-    const stage = await confirmStageAll();
-    if (!stage) {
-      p.cancel("Nothing to commit");
+    const unstagedFiles = await getUnstagedFiles(cwd);
+    if (unstagedFiles.length === 0) {
+      p.cancel("No changes to commit (working directory is clean)");
       exitFailure();
     }
-    await stageAll(cwd);
+
+    const filesToStage = await stageChangesPrompt(unstagedFiles);
+    if (!filesToStage || filesToStage.length === 0) {
+      p.cancel("No staged files");
+      exitFailure();
+      return;
+    }
+
+    await stageFiles(filesToStage, cwd);
     staged = await hasStagedFiles(cwd);
     if (!staged) {
       p.cancel("Nothing to commit");
