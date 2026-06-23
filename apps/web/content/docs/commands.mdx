@@ -7,14 +7,16 @@ The `bc` binary (alias `better-commit`) provides interactive commits and validat
 
 ## Command overview
 
-| Command            | Description                                          |
-| ------------------ | ---------------------------------------------------- |
-| `bc` / `bc commit` | Interactive commit (default)                         |
-| `bc init`          | Create `commit.config.ts`                            |
-| `bc doctor`        | Verify config loads, list plugins, providers         |
-| `bc check`         | Validate last commit (or `--edit` / `--from`–`--to`) |
-| `bc fix`           | Amend last commit message                            |
-| `bc retry`         | Retry commit from cache                              |
+| Command             | Description                                          |
+| ------------------- | ---------------------------------------------------- |
+| `bc` / `bc commit`  | Interactive commit (default)                         |
+| `bc init`           | Create `commit.config.ts`                            |
+| `bc doctor`         | Verify config loads, list plugins, providers         |
+| `bc check`          | Validate last commit (or `--edit` / `--from`–`--to`) |
+| `bc fix`            | Amend last commit message                            |
+| `bc retry`          | Retry commit from cache                              |
+| `bc stack`          | List the local commit stack and Change-Ids           |
+| `bc amend <target>` | Amend a specific commit in the stack                 |
 
 ## bc commit
 
@@ -118,6 +120,43 @@ Retry the last interactive commit from cache when a previous attempt was interru
 ```sh
 bc retry
 ```
+
+## bc stack
+
+List the local commits in the current branch stack starting from the detected base branch up to `HEAD`, showing their hashes, titles, and `Change-Id` footers.
+
+```sh
+bc stack
+bc stack --base main
+```
+
+| Option         | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| `--base <ref>` | Base branch/commit to compare against (defaults to auto-detection) |
+
+The CLI auto-detects the base branch by looking for the upstream tracking branch or common fallbacks (`origin/main`, `origin/master`, `main`, `master`).
+
+## bc amend
+
+Amend a specific commit in the local stack using staged changes. It creates a `fixup!` commit and automatically runs a non-interactive Git autosquash rebase to merge the changes cleanly into the target commit while preserving its `Change-Id` footer.
+
+```sh
+bc amend 2
+bc amend I8f9c0e2d
+bc amend 323c58f
+```
+
+| Option         | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| `--base <ref>` | Base branch/commit to compare against (defaults to auto-detection) |
+
+The `<target>` argument can be:
+
+- A **1-based index** from the bottom of the stack (e.g. `2` to amend the second commit).
+- A **Change-Id** prefix or string (e.g. `I8f9c0e2d`).
+- A **commit SHA** prefix (e.g. `323c58f`).
+
+If the rebase runs into merge conflicts, the CLI halts, explains the conflict, and leaves you in Git's normal rebase state where you can resolve files and run `git rebase --continue`.
 
 ## Global options
 

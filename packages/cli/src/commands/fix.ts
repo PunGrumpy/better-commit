@@ -2,6 +2,7 @@ import * as p from "@clack/prompts";
 
 import { resolveProvider } from "../ai/index.js";
 import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
+import type { ValidationResult } from "../config/types.js";
 import { parseCommitMessage } from "../core/commit-format.js";
 import { ensureValidMessageOrExit } from "../core/ensure-valid-message.js";
 import { exitFailure, exitSuccess } from "../core/exit.js";
@@ -24,6 +25,22 @@ export interface FixOptions {
   cwd?: string;
   noAi?: boolean;
 }
+
+const ensureFixNeeded = async (validation: ValidationResult): Promise<void> => {
+  if (validation.valid && validation.warnings.length === 0) {
+    const fixAnyway = await p.confirm({
+      initialValue: false,
+      message: "Last commit is valid. Fix anyway?",
+    });
+    if (p.isCancel(fixAnyway)) {
+      exitSuccess();
+    }
+    if (!fixAnyway) {
+      p.outro("Nothing to fix");
+      exitSuccess();
+    }
+  }
+};
 
 export const runFix = async (options: FixOptions): Promise<void> => {
   const cwd = options.cwd ?? process.cwd();
@@ -58,21 +75,9 @@ export const runFix = async (options: FixOptions): Promise<void> => {
 
   const validation = await validateCommitMessage(lastMessage, config);
 
-  let message: string;
+  await ensureFixNeeded(validation);
 
-  if (validation.valid && validation.warnings.length === 0) {
-    const fixAnyway = await p.confirm({
-      initialValue: false,
-      message: "Last commit is valid. Fix anyway?",
-    });
-    if (p.isCancel(fixAnyway)) {
-      exitSuccess();
-    }
-    if (!fixAnyway) {
-      p.outro("Nothing to fix");
-      exitSuccess();
-    }
-  }
+  let message: string;
 
   const { effectiveProvider, preferredAgent, providerName, useAi } =
     await resolveProvider(config, options, selectUseAI);
@@ -113,11 +118,18 @@ export const runFix = async (options: FixOptions): Promise<void> => {
     exitSuccess();
   }
 
-  await ensureValidMessageOrExit(message, config);
+  let finalMessage = message;
+  const prepareHooks = config.hooks?.prepareMessage ?? [];
+  for (const hook of prepareHooks) {
+    // eslint-disable-next-line no-await-in-loop -- plugin prepare hooks run sequentially
+    finalMessage = await hook(finalMessage);
+  }
+
+  await ensureValidMessageOrExit(finalMessage, config);
 
   try {
-    await commitAmend(message, cwd);
-    p.outro(`Amended: ${message.split("\n")[0]}`);
+    await commitAmend(finalMessage, cwd);
+    p.outro(`Amended: ${finalMessage.split("\n")[0]}`);
   } catch (error) {
     p.log.error(String(error));
     exitFailure();

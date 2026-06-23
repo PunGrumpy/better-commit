@@ -101,11 +101,20 @@ export const mergeUserConfig = (config: UserConfig): ResolvedCommitConfig => {
     .map((p) => p.hooks?.validateMessage)
     .filter((h): h is NonNullable<typeof h> => h !== undefined);
 
+  const prepareMessageHooks = plugins
+    .map((p) => p.hooks?.prepareMessage)
+    .filter((h): h is NonNullable<typeof h> => h !== undefined);
+
+  const hooks: ResolvedCommitConfig["hooks"] = {};
+  if (validateMessageHooks.length > 0) {
+    hooks.validateMessage = validateMessageHooks;
+  }
+  if (prepareMessageHooks.length > 0) {
+    hooks.prepareMessage = prepareMessageHooks;
+  }
+
   return {
     ...resolvedSchema.parse(merged),
-    hooks:
-      validateMessageHooks.length > 0
-        ? { validateMessage: validateMessageHooks }
-        : undefined,
+    hooks: Object.keys(hooks).length > 0 ? hooks : undefined,
   } as ResolvedCommitConfig;
 };

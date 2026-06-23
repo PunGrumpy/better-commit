@@ -23,6 +23,7 @@ export interface BetterCommitPlugin {
     validateMessage?: (
       message: string
     ) => ValidationResult | Promise<ValidationResult>;
+    prepareMessage?: (message: string) => string | Promise<string>;
   };
   id: string;
   rules?: {
@@ -50,9 +51,10 @@ export interface ResolvedCommitConfig {
     provider: ProviderName;
   };
   hooks?: {
-    validateMessage: ((
+    validateMessage?: ((
       message: string
     ) => ValidationResult | Promise<ValidationResult>)[];
+    prepareMessage?: ((message: string) => string | Promise<string>)[];
   };
   pluginIds: string[];
   rules: {

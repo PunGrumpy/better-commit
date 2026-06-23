@@ -3,7 +3,7 @@ import type { UserConfig } from "./config/types.js";
 export { DuplicatePluginError } from "./config/duplicate-plugin-error.js";
 export { MissingConventionalPluginError } from "./config/missing-conventional-plugin-error.js";
 export { mergeUserConfig } from "./config/resolve.js";
-export { aiSuggest, conventionalCommits } from "./plugins/index.js";
+export { aiSuggest, conventionalCommits, stacking } from "./plugins/index.js";
 export type {
   BetterCommitPlugin,
   ProviderName,

@@ -1,12 +1,14 @@
 import { Command } from "commander";
 
 import packageJson from "../package.json" with { type: "json" };
+import { runAmend } from "./commands/amend.js";
 import { runCheck } from "./commands/check.js";
 import { runCommit } from "./commands/commit.js";
 import { runDoctor } from "./commands/doctor.js";
 import { runFix } from "./commands/fix.js";
 import { runInit } from "./commands/init.js";
 import { runRetry } from "./commands/retry.js";
+import { runStack } from "./commands/stack.js";
 import "./ai/index.js";
 
 const program = new Command();
@@ -85,6 +87,30 @@ program
   .description("Retry commit with cached data")
   .action(async () => {
     await runRetry({ cwd: process.cwd() });
+  });
+
+program
+  .command("stack")
+  .description("List the local commit stack and Change-Ids")
+  .option("--base <ref>", "Base branch/commit to compare against")
+  .action(async function stackAction(this: Command) {
+    const opts = this.opts();
+    await runStack({
+      base: opts.base as string | undefined,
+      cwd: process.cwd(),
+    });
+  });
+
+program
+  .command("amend <target>")
+  .description("Amend a specific commit in the stack using staged changes")
+  .option("--base <ref>", "Base branch/commit to compare against")
+  .action(async function amendAction(this: Command, target: string) {
+    const opts = this.opts();
+    await runAmend(target, {
+      base: opts.base as string | undefined,
+      cwd: process.cwd(),
+    });
   });
 
 program

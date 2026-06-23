@@ -5,13 +5,19 @@ export interface ParsedCommitMessage {
   breaking?: boolean;
   body?: string;
   footer?: string;
+  changeId?: string;
 }
 
 export const formatCommitMessage = (
   type: string,
   scope: string,
   subject: string,
-  options?: { breaking?: boolean; body?: string; breakingChange?: string }
+  options?: {
+    breaking?: boolean;
+    body?: string;
+    breakingChange?: string;
+    changeId?: string;
+  }
 ): string => {
   const typeWithBreaking = options?.breaking ? `${type}!` : type;
   const prefix = scope
@@ -24,25 +30,46 @@ export const formatCommitMessage = (
   if (options?.breakingChange?.trim()) {
     msg += `\n\nBREAKING CHANGE: ${options.breakingChange.trim()}`;
   }
+  if (options?.changeId?.trim()) {
+    msg += `\n\nChange-Id: ${options.changeId.trim()}`;
+  }
   return msg;
 };
 
-const parseBodyFooter = (rest: string): { body?: string; footer?: string } => {
+const parseBodyFooter = (
+  rest: string
+): { body?: string; footer?: string; changeId?: string } => {
   if (!rest) {
     return {};
   }
-  const breakingMatch = rest.match(/\n*BREAKING CHANGE:\s*(?<breaking>.+)$/su);
+  let currentRest = rest.trim();
+  let changeId: string | undefined;
+
+  const changeIdMatch = currentRest.match(
+    /\n*Change-Id:\s*(?<changeId>I[0-9a-fA-F]{40})\s*$/iu
+  );
+  if (changeIdMatch?.groups?.changeId) {
+    ({ changeId } = changeIdMatch.groups);
+    currentRest = currentRest
+      .replace(/\n*Change-Id:\s*I[0-9a-fA-F]{40}\s*$/iu, "")
+      .trim();
+  }
+
+  const breakingMatch = currentRest.match(
+    /\n*BREAKING CHANGE:\s*(?<breaking>.+)$/su
+  );
   if (breakingMatch?.groups) {
     const footer = `BREAKING CHANGE: ${breakingMatch.groups.breaking.trim()}`;
-    const beforeBreaking = rest
+    const beforeBreaking = currentRest
       .replace(/\n*BREAKING CHANGE:\s*.+$/su, "")
       .trim();
     return {
       body: beforeBreaking || undefined,
+      changeId,
       footer,
     };
   }
-  return { body: rest || undefined };
+  return { body: currentRest || undefined, changeId };
 };
 
 /** Parses "type(scope): subject" or "type: subject" into components. */
@@ -65,8 +92,16 @@ export const parseCommitMessage = (
     const breaking = headerLine.includes("!");
     const scope = scopeRaw.trim();
     const subject = subjectRaw.trim();
-    const { body, footer } = parseBodyFooter(rest);
-    return { body, breaking, footer, scope, subject, type };
+    const { body, footer, changeId } = parseBodyFooter(rest);
+    return {
+      body,
+      breaking,
+      footer,
+      scope,
+      subject,
+      type,
+      ...(changeId === undefined ? {} : { changeId }),
+    };
   }
   const noScopeWithBreaking = /^(?<type>\w+)!?:\s*(?<subject>.+)$/su.exec(
     headerLine
@@ -75,8 +110,16 @@ export const parseCommitMessage = (
     const { type, subject: subjectRaw } = noScopeWithBreaking.groups;
     const breaking = headerLine.includes("!");
     const subject = subjectRaw.trim();
-    const { body, footer } = parseBodyFooter(rest);
-    return { body, breaking, footer, scope: "", subject, type };
+    const { body, footer, changeId } = parseBodyFooter(rest);
+    return {
+      body,
+      breaking,
+      footer,
+      scope: "",
+      subject,
+      type,
+      ...(changeId === undefined ? {} : { changeId }),
+    };
   }
   return null;
 };
