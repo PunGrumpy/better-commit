@@ -34,6 +34,37 @@ export const stageAll = async (cwd: string = process.cwd()): Promise<void> => {
   await git(["add", "-A"], cwd);
 };
 
+export const getUnstagedFiles = async (
+  cwd: string = process.cwd()
+): Promise<string[]> => {
+  const [modified, untracked] = await Promise.all([
+    git(["diff", "--name-only"], cwd),
+    git(["ls-files", "--others", "--exclude-standard"], cwd),
+  ]);
+  const files = new Set<string>();
+  if (modified.exitCode === 0 && modified.stdout) {
+    for (const f of modified.stdout.split("\n").filter(Boolean)) {
+      files.add(f);
+    }
+  }
+  if (untracked.exitCode === 0 && untracked.stdout) {
+    for (const f of untracked.stdout.split("\n").filter(Boolean)) {
+      files.add(f);
+    }
+  }
+  return [...files];
+};
+
+export const stageFiles = async (
+  files: string[],
+  cwd: string = process.cwd()
+): Promise<void> => {
+  if (files.length === 0) {
+    return;
+  }
+  await git(["add", ...files], cwd);
+};
+
 export const writeHookCommitMessage = (
   filePath: string,
   message: string
