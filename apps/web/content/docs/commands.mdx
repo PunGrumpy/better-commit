@@ -29,6 +29,17 @@ bc commit
 
 With `aiSuggest` configured, the CLI can propose a message from your staged diff before you confirm.
 
+### Staging behavior
+
+If there are no staged files when running `bc commit` or `bc retry`, the CLI handles it adaptively:
+
+- **Clean repository**: If there are no unstaged or staged changes, the CLI cancels early with `No changes to commit`.
+- **Small changes (≤ 10 files)**: Directly prompts you with an interactive multiselect menu where all unstaged files (including untracked files) are pre-selected. You can press Enter to stage all, or toggle selections to stage a subset.
+- **Large changes (> 10 files)**: Displays a menu first to choose between:
+  1. `Stage all files (X files)`
+  2. `Select files interactively...` (shows the multiselect menu)
+  3. `Cancel`
+
 ### Options
 
 | Option          | Description                                                     |
