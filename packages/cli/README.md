@@ -1,4 +1,10 @@
 <div align="center">
+  <a href="https://github.com/PunGrumpy/better-commit">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset=".github/assets/better-commit.svg">
+      <img alt="better-commit logo" src=".github/assets/better-commit.svg" height="128">
+    </picture>
+  </a>
   <h1>better-commit</h1>
 
   <p><strong>TypeScript-first conventional commits from a single <code>commit.config.ts</code> — composable plugins, optional AI, and the same rules in CI.</strong></p>
