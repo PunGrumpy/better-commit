@@ -72,3 +72,19 @@ html:not([data-anchor-scrolling]) {
     scroll-behavior: auto !important;
   }
 }
+
+:root {
+  --fd-background: var(--background);
+  --fd-foreground: var(--foreground);
+  --fd-muted: var(--muted);
+  --fd-muted-foreground: var(--muted-foreground);
+  --fd-primary: var(--primary);
+  --fd-primary-foreground: var(--primary-foreground);
+  --fd-border: var(--border);
+  --fd-ring: var(--ring);
+  --fd-radius: var(--radius);
+  --fd-card: var(--card);
+  --fd-card-foreground: var(--card-foreground);
+  --fd-popover: var(--popover);
+  --fd-popover-foreground: var(--popover-foreground);
+}
