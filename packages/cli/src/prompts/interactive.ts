@@ -113,6 +113,27 @@ export const confirmMessage = async (message: string): Promise<boolean> => {
   return result as boolean;
 };
 
+const promptSelectFiles = async (
+  unstagedFiles: string[],
+  message: string
+): Promise<string[]> => {
+  const result = await p.multiselect({
+    initialValues: unstagedFiles,
+    message,
+    options: unstagedFiles.map((file) => ({
+      label: file,
+      value: file,
+    })),
+    required: false,
+  });
+
+  if (p.isCancel(result)) {
+    exitCancel();
+  }
+
+  return result as string[];
+};
+
 export const stageChangesPrompt = async (
   unstagedFiles: string[]
 ): Promise<string[] | false> => {
@@ -121,21 +142,10 @@ export const stageChangesPrompt = async (
   }
 
   if (unstagedFiles.length <= 10) {
-    const result = await p.multiselect({
-      initialValues: unstagedFiles,
-      message: "No staged files. Select files to stage:",
-      options: unstagedFiles.map((file) => ({
-        label: file,
-        value: file,
-      })),
-      required: false,
-    });
-
-    if (p.isCancel(result)) {
-      exitCancel();
-    }
-
-    return result as string[];
+    return promptSelectFiles(
+      unstagedFiles,
+      "No staged files. Select files to stage:"
+    );
   }
 
   const choice = await p.select({
@@ -161,21 +171,7 @@ export const stageChangesPrompt = async (
   }
 
   if (choice === "interactive") {
-    const result = await p.multiselect({
-      initialValues: unstagedFiles,
-      message: "Select files to stage:",
-      options: unstagedFiles.map((file) => ({
-        label: file,
-        value: file,
-      })),
-      required: false,
-    });
-
-    if (p.isCancel(result)) {
-      exitCancel();
-    }
-
-    return result as string[];
+    return promptSelectFiles(unstagedFiles, "Select files to stage:");
   }
 
   return false;
