@@ -32,7 +32,7 @@ export const Header = () => (
                 prefetch={!isExternal}
                 target={isExternal ? "_blank" : undefined}
                 rel={isExternal ? "noopener noreferrer" : undefined}
-                className="w-full outline-none flex gap-1 items-center text-muted-foreground text-sm transition-colors duration-100 hover:text-foreground data-active:text-foreground"
+                className="w-full outline-none flex gap-1 items-center text-muted-foreground text-sm transition-colors duration-150 ease-out hover:text-foreground focus-ring data-active:text-foreground"
               >
                 {item.label}
                 {isExternal && <ArrowUpRight className="size-3" />}
