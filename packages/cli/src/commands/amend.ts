@@ -38,7 +38,8 @@ export const runAmend = async (
   }
 
   // Reverse commits so bottom of the stack is index 0
-  const stack = [...commits].toReversed();
+  // eslint-disable-next-line unicorn/no-array-reverse -- safe to reverse a cloned array
+  const stack = [...commits].reverse();
   let targetItem: (typeof stack)[number] | undefined;
 
   // 1. Try numeric index resolution (1-based index from bottom of stack)

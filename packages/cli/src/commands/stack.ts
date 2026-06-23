@@ -67,7 +67,8 @@ export const runStack = async (options: StackOptions): Promise<void> => {
   }
 
   // Reverse commits so bottom of the stack is index 0
-  const stack = [...commits].toReversed();
+  // eslint-disable-next-line unicorn/no-array-reverse -- safe to reverse a cloned array
+  const stack = [...commits].reverse();
 
   p.log.message("Stack (bottom to top):");
   for (let i = 0; i < stack.length; i += 1) {
