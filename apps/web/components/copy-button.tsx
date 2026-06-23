@@ -53,7 +53,7 @@ export const CopyButton = ({
       <div
         aria-hidden={!copied}
         className={cn(
-          "absolute inset-0 flex items-center justify-center transition-[opacity,scale,filter] duration-150 ease-[cubic-bezier(0.175,0.885,0.32,1.1)]",
+          "absolute inset-0 flex items-center justify-center transition-[opacity,scale,filter] duration-150 ease-spring",
           copied
             ? "scale-100 opacity-100 blur-0"
             : "scale-[0.25] opacity-0 blur-xs"
@@ -64,7 +64,7 @@ export const CopyButton = ({
       <CopyIcon
         aria-hidden={copied}
         className={cn(
-          "size-3.5 transition-[opacity,scale,filter] duration-150 ease-[cubic-bezier(0.175,0.885,0.32,1.1)]",
+          "size-3.5 transition-[opacity,scale,filter] duration-150 ease-spring",
           copied
             ? "scale-[0.25] opacity-0 blur-xs"
             : "scale-100 opacity-100 blur-0"
