@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Logo, nav } from "@/lib/shared";
 
 export const Header = () => (
-  <div className="mx-auto flex w-full  justify-between px-4 sm:px-8 lg:px-12">
+  <div className="mx-auto flex w-full justify-between px-4 sm:px-8 lg:px-12">
     <div className="flex select-none flex-row items-center">
       <Logo />
     </div>
@@ -20,7 +20,7 @@ export const Header = () => (
           return (
             <ul
               key={item.label}
-              className="group flex-1 list-none items-center justify-center h-14 gap-4 hidden pl-6 lg:flex"
+              className="group flex flex-1 list-none items-center justify-center h-14 gap-4 pl-6"
               data-slot="navigation-menu-list"
             >
               <li className="relative" data-slot="navigation-menu-item">

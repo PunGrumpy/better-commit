@@ -44,16 +44,16 @@ const code = `export default defineConfig({
 
 const HomePage = () => (
   <div className="relative flex flex-col gap-6 items-center justify-center px-4 w-full max-w-lg mx-auto">
-    <h1 className="text-2xl font-semibold">
+    <h1 className="text-pretty text-2xl font-semibold">
       Every commit, vetted before it reaches your repository
     </h1>
-    <div className="flex w-full max-w-2xl flex-col items-center gap-4 sm:flex-row sm:justify-center">
-      <Installer command="npx better-commit/cli@latest" />
+    <div className="flex w-full max-w-2xl items-center gap-4 justify-center">
+      <Installer command="npx better-commit/cli" />
       <Button nativeButton={false} size="lg" render={<Link href="/docs" />}>
         Read docs
       </Button>
     </div>
-    <div className="w-full text-balance text-muted-foreground text-sm">
+    <div className="w-full text-pretty text-muted-foreground text-sm">
       Configure <code>commit.config.ts</code> before your commits are served.
     </div>
     <div className="w-full">
