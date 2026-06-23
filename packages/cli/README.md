@@ -3,10 +3,10 @@
 
   <p><strong>TypeScript-first conventional commits from a single <code>commit.config.ts</code> — composable plugins, optional AI, and the same rules in CI.</strong></p>
 
-<a href="https://www.npmjs.com/package/@better-commit/cli"><img alt="npm version" src="https://shieldcn.dev/npm/@better-commit/cli.svg?variant=default&size=default&font=geist-mono"></a>
-<a href="https://www.npmjs.com/package/@better-commit/cli"><img alt="npm downloads" src="https://shieldcn.dev/npm/dm/@better-commit/cli.svg?size=default&font=geist-mono"></a>
-<a href="https://github.com/PunGrumpy/better-commit/blob/main/LICENSE"><img alt="License" src="https://shieldcn.dev/npm/license/@better-commit/cli.svg?size=default&font=geist-mono"></a>
-<a href="https://better-commit.vercel.app/docs"><img alt="Documentation" src="https://shieldcn.dev/badge/docs-better--commit.vercel.app.svg?size=default&font=geist-mono&logo=lu%3ANewspaper"></a>
+<a href="https://www.npmjs.com/package/@better-commit/cli"><img alt="npm version" src="https://shieldcn.dev/npm/@better-commit/cli.svg?size=sm&font=geist-mono"></a>
+<a href="https://www.npmjs.com/package/@better-commit/cli"><img alt="npm downloads" src="https://shieldcn.dev/npm/dm/@better-commit/cli.svg?size=sm&font=geist-mono"></a>
+<a href="https://github.com/PunGrumpy/better-commit/blob/main/LICENSE"><img alt="License" src="https://shieldcn.dev/npm/license/@better-commit/cli.svg?size=sm&font=geist-mono"></a>
+<a href="https://better-commit.vercel.app/docs"><img alt="Documentation" src="https://shieldcn.dev/badge/docs-better--commit.vercel.app.svg?size=sm&font=geist-mono&logo=ri%3AHiDocumentText"></a>
 
 </div>
 
