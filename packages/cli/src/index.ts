@@ -92,18 +92,27 @@ program
   .description("Create a commit with AI-powered message (default)")
   .option("--dry-run", "Show message without committing")
   .option("--no-ai", "Skip AI, use manual/heuristic only")
+  .option(
+    "--hook <file>",
+    "prepare-commit-msg hook mode: write message to file, do not commit"
+  )
   .action(async function commitAction(this: Command) {
     const opts = this.opts();
     await runCommit({
       cwd: process.cwd(),
       dryRun: opts.dryRun as boolean,
+      hookMessagePath: opts.hook as string | undefined,
       noAi: noAi(opts),
     });
   });
 
-try {
-  await program.parseAsync(process.argv);
-} catch (error: unknown) {
-  console.error(error);
-  process.exit(1);
-}
+const main = async (): Promise<void> => {
+  try {
+    await program.parseAsync(process.argv);
+  } catch (error: unknown) {
+    console.error(error);
+    process.exit(1);
+  }
+};
+
+void main();

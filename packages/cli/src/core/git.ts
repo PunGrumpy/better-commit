@@ -1,7 +1,12 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
 import { execa } from "execa";
+
+const skipHookEnv = (): NodeJS.ProcessEnv => ({
+  ...process.env,
+  BETTER_COMMIT_SKIP_HOOK: "1",
+});
 
 const git = (args: string[], cwd: string) =>
   execa("git", args, { cwd, reject: false });
@@ -29,11 +34,18 @@ export const stageAll = async (cwd: string = process.cwd()): Promise<void> => {
   await git(["add", "-A"], cwd);
 };
 
+export const writeHookCommitMessage = (
+  filePath: string,
+  message: string
+): void => {
+  writeFileSync(filePath, `${message}\n`, "utf-8");
+};
+
 export const commit = async (
   message: string,
   cwd: string = process.cwd()
 ): Promise<void> => {
-  await execa("git", ["commit", "-m", message], { cwd });
+  await execa("git", ["commit", "-m", message], { cwd, env: skipHookEnv() });
 };
 
 export const getLastCommitMessage = async (
@@ -89,5 +101,8 @@ export const commitAmend = async (
   message: string,
   cwd: string = process.cwd()
 ): Promise<void> => {
-  await execa("git", ["commit", "--amend", "-m", message], { cwd });
+  await execa("git", ["commit", "--amend", "-m", message], {
+    cwd,
+    env: skipHookEnv(),
+  });
 };

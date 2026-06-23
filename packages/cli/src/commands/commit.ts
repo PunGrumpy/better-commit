@@ -5,13 +5,14 @@ import { ConfigLoadError, loadResolvedConfig } from "../config/load.js";
 import { writeCache } from "../core/cache.js";
 import { parseCommitMessage } from "../core/commit-format.js";
 import { ensureValidMessageOrExit } from "../core/ensure-valid-message.js";
-import { exitFailure, exitSuccess } from "../core/exit.js";
+import { exitCancel, exitFailure, exitSuccess } from "../core/exit.js";
 import {
   commit as gitCommit,
   getStagedDiff,
   hasStagedFiles,
   isGitRepo,
   stageAll,
+  writeHookCommitMessage,
 } from "../core/git.js";
 import { prepareDiffForAi } from "../core/prepare-diff-for-ai.js";
 import { getCommitPromptAsync } from "../prompts/commit-prompt.js";
@@ -29,6 +30,7 @@ import {
 export interface CommitOptions {
   cwd?: string;
   dryRun?: boolean;
+  hookMessagePath?: string;
   noAi?: boolean;
 }
 
@@ -52,6 +54,11 @@ const ensureStaged = async (cwd: string): Promise<void> => {
 
 export const runCommit = async (options: CommitOptions): Promise<void> => {
   const cwd = options.cwd ?? process.cwd();
+  const { hookMessagePath } = options;
+
+  if (hookMessagePath !== undefined) {
+    process.env.BETTER_COMMIT_HOOK_MODE = "1";
+  }
 
   p.intro("better-commit");
 
@@ -60,7 +67,9 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
     exitFailure();
   }
 
-  await ensureStaged(cwd);
+  if (hookMessagePath === undefined) {
+    await ensureStaged(cwd);
+  }
 
   let config;
   try {
@@ -111,7 +120,7 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
   const confirmed = await confirmMessage(message);
   if (!confirmed) {
     p.cancel("Commit cancelled");
-    exitSuccess();
+    exitCancel();
   }
 
   await writeCache(
@@ -130,6 +139,12 @@ export const runCommit = async (options: CommitOptions): Promise<void> => {
 
   if (options.dryRun) {
     p.outro(`[dry-run] Would commit: ${message}`);
+    exitSuccess();
+  }
+
+  if (hookMessagePath !== undefined) {
+    writeHookCommitMessage(hookMessagePath, message);
+    p.outro(`Prepared: ${message.split("\n")[0] ?? message}`);
     exitSuccess();
   }
 
