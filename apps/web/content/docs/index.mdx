@@ -13,7 +13,7 @@ A typical setup looks like this:
 my-app/
 ├── commit.config.ts          # types, scopes, optional aiSuggest
 ├── .husky/
-│   └── prepare-commit-msg    # exec bc commit
+│   └── prepare-commit-msg    # bc commit --hook (via git commit)
 └── .github/workflows/
     └── commit-check.yml      # bc check
 ```

@@ -80,8 +80,14 @@ bc init --hooks
 Example `.husky/prepare-commit-msg`:
 
 ```bash
-exec bc commit
+#!/usr/bin/env sh
+[ -n "$BETTER_COMMIT_SKIP_HOOK" ] && exit 0
+[ "$2" = "merge" ] || [ "$2" = "squash" ] && exit 0
+export GIT_EDITOR=cat
+exec < /dev/tty > /dev/tty 2>&1 bc commit --hook "$1"
 ```
+
+The `--hook` flag is for Git hooks only — use `bc` or `bc commit` directly for the normal workflow.
 
 ## Security
 
