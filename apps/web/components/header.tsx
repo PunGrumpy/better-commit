@@ -13,33 +13,34 @@ export const Header = () => (
       data-viewport="false"
       className="group/navigation-menu relative z-10 flex max-w-max flex-1 items-center justify-center"
     >
-      <div className="relative flex select-none flex-row items-center">
+      <ul
+        className="relative flex select-none flex-row items-center list-none h-14 gap-2 pl-4 sm:pl-6"
+        data-slot="navigation-menu-list"
+      >
         {nav.map((item) => {
           const isExternal = item.href.startsWith("http");
 
           return (
-            <ul
+            <li
               key={item.label}
-              className="group flex flex-1 list-none items-center justify-center h-14 gap-4 pl-6"
-              data-slot="navigation-menu-list"
+              className="relative"
+              data-slot="navigation-menu-item"
             >
-              <li className="relative" data-slot="navigation-menu-item">
-                <Link
-                  data-slot="navigation-menu-link"
-                  href={item.href}
-                  prefetch={!isExternal}
-                  target={isExternal ? "_blank" : undefined}
-                  rel={isExternal ? "noopener noreferrer" : undefined}
-                  className="w-full outline-none flex gap-1 items-center text-muted-foreground text-sm transition-colors duration-100 hover:text-foreground data-active:text-foreground"
-                >
-                  {item.label}
-                  {isExternal && <ArrowUpRight className="size-3" />}
-                </Link>
-              </li>
-            </ul>
+              <Link
+                data-slot="navigation-menu-link"
+                href={item.href}
+                prefetch={!isExternal}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+                className="w-full outline-none flex gap-1 items-center text-muted-foreground text-sm transition-colors duration-100 hover:text-foreground data-active:text-foreground"
+              >
+                {item.label}
+                {isExternal && <ArrowUpRight className="size-3" />}
+              </Link>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </nav>
   </div>
 );
