@@ -21,6 +21,10 @@ export const nav = [
     label: "Docs",
   },
   {
+    href: "https://npmx.dev/package/@better-commit/cli",
+    label: "NPM",
+  },
+  {
     href: `https://github.com/${github.owner}/${github.repo}`,
     label: "GitHub",
   },
