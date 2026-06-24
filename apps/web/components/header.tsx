@@ -14,7 +14,7 @@ export const Header = () => (
       className="group/navigation-menu relative z-10 flex max-w-max flex-1 items-center justify-center"
     >
       <ul
-        className="relative flex select-none flex-row items-center list-none h-14 gap-2 pl-4 sm:pl-6"
+        className="relative flex select-none flex-row items-center list-none h-14"
         data-slot="navigation-menu-list"
       >
         {nav.map((item) => {
@@ -23,7 +23,7 @@ export const Header = () => (
           return (
             <li
               key={item.label}
-              className="relative"
+              className="relative pl-4 sm:pl-6"
               data-slot="navigation-menu-item"
             >
               <Link
